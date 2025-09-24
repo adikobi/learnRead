@@ -24,6 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('option3')
     ];
     const feedbackText = document.getElementById('feedback-text');
+    const confettiCanvas = document.getElementById('confetti-canvas');
+    const shootConfetti = confetti.create(confettiCanvas, {
+        resize: true,
+        useWorker: true,
+    });
 
     let currentWordIndex = 0;
     let isChecking = false; // Prevents multiple clicks while checking answer
@@ -66,16 +71,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function checkAnswer(selectedEmoji) {
+    function checkAnswer(selectedElement) {
         if (isChecking) return; // Don't do anything if already checking
         isChecking = true;
 
+        const selectedEmoji = selectedElement.dataset.emoji;
         const correctEmoji = gameData[currentWordIndex].emoji;
 
         if (selectedEmoji === correctEmoji) {
             // Correct answer
             feedbackText.textContent = '👍 כל הכבוד!';
             feedbackText.className = 'correct feedback-animation';
+            shootConfetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
 
             setTimeout(() => {
                 currentWordIndex++;
@@ -84,20 +95,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     wordElement.textContent = 'סיימת את המשחק!';
                     document.getElementById('options-container').style.display = 'none';
                     feedbackText.textContent = '🎉 כל הכבוד!';
+                    shootConfetti({ particleCount: 200, spread: 120 });
                 } else {
                     loadNewWord();
                 }
-            }, 1500); // Wait 1.5 seconds before loading next word
+            }, 2000); // Wait 2 seconds before loading next word
         } else {
             // Incorrect answer
+            selectedElement.classList.add('shake');
             feedbackText.textContent = '😟 נסה שוב';
             feedbackText.className = 'incorrect feedback-animation';
 
-            // Allow trying again after a short delay
+            // Allow trying again after the animation
             setTimeout(() => {
+                selectedElement.classList.remove('shake');
                 feedbackText.textContent = '';
                 isChecking = false;
-            }, 1000);
+            }, 800);
         }
     }
 
@@ -107,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     optionElements.forEach(el => {
         el.addEventListener('click', (e) => {
-            checkAnswer(e.target.dataset.emoji);
+            checkAnswer(e.target); // Pass the element itself
         });
     });
 
