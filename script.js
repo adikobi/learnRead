@@ -143,6 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 selectedElement.classList.remove('shake');
                 feedbackText.textContent = '';
+                document.getElementById('options-container').classList.remove('no-hover');
                 isChecking = false;
             }, 800);
         }
