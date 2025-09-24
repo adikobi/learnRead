@@ -126,34 +126,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentWordIndex = 0;
     let isChecking = false; // Prevents multiple clicks while checking answer
 
-    // --- Floating Letters Animation ---
-
-    function createFloatingLetters() {
-        const lettersContainer = document.getElementById('floating-letters-container');
-        if (!lettersContainer) return;
-
-        const hebrewAlphabet = 'אבגדהוזחטיכלמנסעפצקרשת';
-        const numberOfLetters = 30;
-
-        for (let i = 0; i < numberOfLetters; i++) {
-            const letter = document.createElement('span');
-            letter.className = 'floating-letter';
-            letter.textContent = hebrewAlphabet[Math.floor(Math.random() * hebrewAlphabet.length)];
-
-            // Randomize properties for a natural look
-            letter.style.left = `${Math.random() * 100}vw`;
-            letter.style.animationDuration = `${10 + Math.random() * 10}s`; // 10-20 seconds
-            letter.style.animationDelay = `${Math.random() * 10}s`; // 0-10 seconds delay
-            letter.style.fontSize = `${1.5 + Math.random()}rem`; // 1.5-2.5rem
-
-            lettersContainer.appendChild(letter);
-        }
-    }
-
-
     // --- Game Logic ---
 
     function startGame() {
+        shuffleArray(gameData); // Randomize the order of words
+        currentWordIndex = 0; // Reset index for the new game
         splashScreen.classList.remove('active');
         gameScreen.classList.add('active');
         loadNewWord();
@@ -254,5 +231,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Initial setup
-    createFloatingLetters();
 });
