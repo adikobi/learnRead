@@ -51,12 +51,7 @@ body {
 .logo p {
     font-size: 1.2rem;
     color: #555;
-    margin-bottom: 20px;
-}
-
-.splash-logo-icon {
-    font-size: 6rem;
-    margin: 20px 0;
+    margin-bottom: 20px; /* Adjust spacing */
 }
 
 #start-game-btn {
