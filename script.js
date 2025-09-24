@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Game data: Word with nikkud and corresponding emoji
     const gameData = [
+        // Original words
         { word: 'בַּנָּנָה', emoji: '🍌' },
         { word: 'תַּפּוּחַ', emoji: '🍎' },
         { word: 'כֶּלֶב', emoji: '🐶' },
@@ -10,7 +11,23 @@ document.addEventListener('DOMContentLoaded', () => {
         { word: 'מְכוֹנִית', emoji: '🚗' },
         { word: 'בַּיִת', emoji: '🏠' },
         { word: 'שֶׁמֶשׁ', emoji: '☀️' },
-        { word: 'כּוֹכָב', emoji: '⭐' }
+        { word: 'כּוֹכָב', emoji: '⭐' },
+        // New words
+        { word: 'עוּגָה', emoji: '🎂' },
+        { word: 'פֶּרַח', emoji: '🌸' },
+        { word: 'דָּג', emoji: '🐠' },
+        { word: 'כַּדּוּר', emoji: '⚽' },
+        { word: 'סֵפֶר', emoji: '📖' },
+        { word: 'מַטּוֹס', emoji: '✈️' },
+        { word: 'גְּלִידָה', emoji: '🍦' },
+        { word: 'עֵץ', emoji: '🌳' },
+        { word: 'פִּטְרִיָּה', emoji: '🍄' },
+        { word: 'פַּרְפַּר', emoji: '🦋' },
+        { word: 'צְפַרְדֵּעַ', emoji: '🐸' },
+        { word: 'דְּבוֹרָה', emoji: '🐝' },
+        { word: 'פִּיצָה', emoji: '🍕' },
+        { word: 'רַכֶּבֶת', emoji: '🚆' },
+        { word: 'מִטְרִיָּה', emoji: '☔' }
     ];
 
     // DOM Elements
