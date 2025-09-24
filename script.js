@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Game data: Word with nikkud and corresponding emoji
     const gameData = [
-        // Original words
+        // Original 10
         { word: 'בַּנָּנָה', emoji: '🍌' },
         { word: 'תַּפּוּחַ', emoji: '🍎' },
         { word: 'כֶּלֶב', emoji: '🐶' },
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { word: 'בַּיִת', emoji: '🏠' },
         { word: 'שֶׁמֶשׁ', emoji: '☀️' },
         { word: 'כּוֹכָב', emoji: '⭐' },
-        // New words
+        // Expansion 1 (15 words)
         { word: 'עוּגָה', emoji: '🎂' },
         { word: 'פֶּרַח', emoji: '🌸' },
         { word: 'דָּג', emoji: '🐠' },
@@ -27,7 +27,33 @@ document.addEventListener('DOMContentLoaded', () => {
         { word: 'דְּבוֹרָה', emoji: '🐝' },
         { word: 'פִּיצָה', emoji: '🍕' },
         { word: 'רַכֶּבֶת', emoji: '🚆' },
-        { word: 'מִטְרִיָּה', emoji: '☔' }
+        { word: 'מִטְרִיָּה', emoji: '☔' },
+        // Expansion 2 (25 words)
+        { word: 'אֲבַטִּיחַ', emoji: '🍉' },
+        { word: 'תּוּת', emoji: '🍓' },
+        { word: 'עַגְבָנִיָּה', emoji: '🍅' },
+        { word: 'גֶּזֶר', emoji: '🥕' },
+        { word: 'קוֹף', emoji: '🐵' },
+        { word: 'פָּרָה', emoji: '🐄' },
+        { word: 'תַּרְנְגוֹל', emoji: '🐔' },
+        { word: 'סוּס', emoji: '🐴' },
+        { word: 'חַזִּיר', emoji: '🐷' },
+        { word: 'כִּבְשָׂה', emoji: '🐑' },
+        { word: 'אוֹפַנַּיִם', emoji: '🚲' },
+        { word: 'סִירָה', emoji: '⛵' },
+        { word: 'טִיל', emoji: '🚀' },
+        { word: 'מַסּוֹק', emoji: '🚁' },
+        { word: 'אַמְבּוּלַנְס', emoji: '🚑' },
+        { word: 'כַּבָּאִית', emoji: '🚒' },
+        { word: 'אַרְמוֹן', emoji: '🏰' },
+        { word: 'עַיִן', emoji: '👁️' },
+        { word: 'לֵב', emoji: '❤️' },
+        { word: 'יָד', emoji: '✋' },
+        { word: 'בָּלוֹן', emoji: '🎈' },
+        { word: 'מַתָּנָה', emoji: '🎁' },
+        { word: 'מַפְתֵּחַ', emoji: '🔑' },
+        { word: 'פַּעֲמוֹן', emoji: '🔔' },
+        { word: 'שָׁעוֹן', emoji: '⏰' }
     ];
 
     // DOM Elements
