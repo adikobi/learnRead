@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function loadNewWord() {
+        document.getElementById('options-container').classList.remove('no-hover');
         isChecking = false;
         feedbackText.textContent = '';
         feedbackText.className = '';
@@ -169,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function checkAnswer(selectedElement) {
         if (isChecking) return; // Don't do anything if already checking
         isChecking = true;
+        document.getElementById('options-container').classList.add('no-hover');
 
         const selectedEmoji = selectedElement.dataset.emoji;
         const correctEmoji = gameData[currentWordIndex].emoji;
