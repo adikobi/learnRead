@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>משחק קריאה בעברית</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="splash-screen" class="screen active">
+        <div class="logo">
+            <h1>משחק קריאה</h1>
+            <p>בואו נלמד עברית!</p>
+        </div>
+        <button id="start-game-btn">התחל משחק</button>
+    </div>
+
+    <div id="game-screen" class="screen">
+        <div id="word-container">
+            <h2 id="word"></h2>
+        </div>
+        <div id="options-container">
+            <div class="option" id="option1"></div>
+            <div class="option" id="option2"></div>
+            <div class="option" id="option3"></div>
+        </div>
+        <div id="feedback-container">
+            <p id="feedback-text"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+/* General Body Styles */
+body {
+    font-family: 'Heebo', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f8ff; /* Light, friendly blue */
+    color: #333;
+    text-align: center;
+    overflow: hidden;
+}
+
+/* Screen Management */
+.screen {
+    display: none;
+    width: 100%;
+    max-width: 400px; /* Optimized for mobile */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.screen.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Splash Screen */
+#splash-screen {
+    justify-content: space-around;
+    height: 100%;
+}
+
+.logo h1 {
+    font-size: 3rem;
+    color: #ff6347; /* Tomato color */
+    margin: 0;
+}
+
+.logo p {
+    font-size: 1.2rem;
+    color: #555;
+}
+
+#start-game-btn {
+    font-family: 'Heebo', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 50px;
+    background-color: #4CAF50; /* Green */
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#start-game-btn:hover {
+    background-color: #45a049;
+}
+
+/* Game Screen */
+#game-screen {
+    justify-content: space-between;
+    height: 80%;
+}
+
+#word-container {
+    margin-bottom: 30px;
+}
+
+#word {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #1e90ff; /* Dodger Blue */
+}
+
+#options-container {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.option {
+    font-size: 4rem;
+    padding: 20px;
+    border: 2px solid #ddd;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+    background-color: white;
+}
+
+.option:hover {
+    transform: scale(1.1);
+    background-color: #f1f1f1;
+}
+
+/* Feedback Styles */
+#feedback-container {
+    height: 50px; /* Reserve space for feedback */
+}
+
+#feedback-text {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.correct {
+    color: #4CAF50; /* Green */
+}
+
+.incorrect {
+    color: #f44336; /* Red */
+}
+
+/* Animation for feedback */
+.feedback-animation {
+    animation: pulse 0.5s;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
