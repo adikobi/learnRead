@@ -114,7 +114,8 @@ body {
     background-color: white;
 }
 
-.option:hover {
+.option:hover, /* For when the user physically hovers */
+.option.hover-active { /* For when your JS applies the class after a click */
     transform: scale(1.1);
     background-color: #f1f1f1;
 }
