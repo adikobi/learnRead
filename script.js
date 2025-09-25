@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // reset hover:
         optionElements.forEach(option => {
             option.classList.remove('hover-active'); 
-        }    
+        });
                                
         // Display the options
         optionElements.forEach((el, index) => {
