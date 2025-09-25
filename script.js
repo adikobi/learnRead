@@ -149,6 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Allow trying again after the animation
             setTimeout(() => {
                 selectedElement.classList.remove('shake');
+                selectedElement.classList.remove('hover-active'); 
                 feedbackText.textContent = '';
                 document.getElementById('options-container').classList.remove('no-hover');
                 isChecking = false;
