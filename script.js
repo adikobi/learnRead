@@ -108,6 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
         optionElements.forEach((el, index) => {
             el.textContent = options[index];
             el.dataset.emoji = options[index]; // Store emoji in data attribute
+            // reset:
+            el.style.transform = 'none'; // Directly reset the transform property
+            el.style.backgroundColor = 'white'; // Directly reset the background color
         });
     }
 
