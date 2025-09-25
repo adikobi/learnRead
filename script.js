@@ -74,9 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadNewWord() {
         
-    
         document.getElementById('options-container').classList.remove('no-hover');
-        document.getElementById('options-container').classList.remove('hover-active');
         isChecking = false;
         feedbackText.textContent = '';
         feedbackText.className = '';
