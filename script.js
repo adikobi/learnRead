@@ -75,10 +75,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadNewWord() {
         
         // reset
-        optionElements.forEach(el => {
-            el.style.transform = 'none'; // Directly reset the transform property
-            el.style.backgroundColor = 'white'; // Directly reset the background color
-        });
+        // optionElements.forEach(el => {
+        //     el.style.transform = 'none'; // Directly reset the transform property
+        //     el.style.backgroundColor = 'white'; // Directly reset the background color
+        // });
 
         document.getElementById('options-container').classList.remove('no-hover');
         isChecking = false;
