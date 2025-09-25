@@ -74,12 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadNewWord() {
         
-        // reset
-        optionElements.forEach(el => {
-            el.style.transform = 'none'; // Directly reset the transform property
-            el.style.backgroundColor = 'white'; // Directly reset the background color
-        });
-
         document.getElementById('options-container').classList.remove('no-hover');
         isChecking = false;
         feedbackText.textContent = '';
@@ -103,7 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Create the options array and shuffle it
         const options = [currentWord.emoji, ...incorrectOptions];
         shuffleArray(options);
-
+    
+        // reset hover:
+        optionElements.forEach(option => {
+            option.classList.remove('hover-active'); 
+        });
+                               
         // Display the options
         optionElements.forEach((el, index) => {
             el.textContent = options[index];
@@ -149,6 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Allow trying again after the animation
             setTimeout(() => {
+                selectedElement.classList.remove('hover-active'); 
                 selectedElement.classList.remove('shake');
                 feedbackText.textContent = '';
                 document.getElementById('options-container').classList.remove('no-hover');
@@ -163,6 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     optionElements.forEach(el => {
         el.addEventListener('click', (e) => {
+            e.currentTarget.classList.add('hover-active');
             checkAnswer(e.target); // Pass the element itself
         });
     });
