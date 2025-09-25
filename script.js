@@ -74,12 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadNewWord() {
         
-        // reset
-        // optionElements.forEach(el => {
-        //     el.style.transform = 'none'; // Directly reset the transform property
-        //     el.style.backgroundColor = 'white'; // Directly reset the background color
-        // });
-        
+    
         document.getElementById('options-container').classList.remove('no-hover');
         document.getElementById('options-container').classList.remove('hover-active');
         isChecking = false;
@@ -104,7 +99,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Create the options array and shuffle it
         const options = [currentWord.emoji, ...incorrectOptions];
         shuffleArray(options);
-
+    
+        // reset hover:
+        optionElements.forEach(option => {
+            option.classList.remove('hover-active'); 
+        }    
+                               
         // Display the options
         optionElements.forEach((el, index) => {
             el.textContent = options[index];
@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     optionElements.forEach(el => {
         el.addEventListener('click', (e) => {
-            button.classList.add('hover-active');
+            e.currentTarget.classList.add('hover-active');
             checkAnswer(e.target); // Pass the element itself
         });
     });
