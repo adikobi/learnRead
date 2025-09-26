@@ -63,6 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     const toggleModeBtn = document.getElementById('toggle-mode-btn');
 
+    // Password Modal Elements
+    const passwordModal = document.getElementById('password-modal');
+    const closeBtn = passwordModal.querySelector('.close-btn');
+    const passwordInputs = [...passwordModal.querySelectorAll('.password-digit')];
+    const passwordFeedback = document.getElementById('password-feedback');
+
     let currentWordIndex = 0;
     let isChecking = false; // Prevents multiple clicks while checking answer
     let isClassicMode = false; // false = recording mode, true = classic mode (no recording)
@@ -99,6 +105,11 @@ document.addEventListener('DOMContentLoaded', () => {
         feedbackText.textContent = '';
         feedbackText.className = '';
         speechFeedbackText.textContent = '';
+
+        // Reset all option styles to prevent visual glitches (especially on iOS)
+        optionElements.forEach(option => {
+            option.classList.remove('hover-active', 'shake');
+        });
 
         // Get the current word object
         const currentWordData = gameData[currentWordIndex];
@@ -225,27 +236,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 isCorrect = normalizeText(correctWordData) === normalizedSpokenWord;
             }
 
+            // Clear previous animations
+            speechFeedbackText.className = '';
+
             if (isCorrect) {
                 speechFeedbackText.textContent = 'נהדר!';
+                speechFeedbackText.classList.add('correct');
+                shootConfetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+
                 recordBtn.disabled = true; // Prevent clicking again during timeout
                 setTimeout(() => {
                     recordBtn.classList.add('hidden');
                     showOptions();
                     speechFeedbackText.textContent = '';
-                }, 1000);
+                    speechFeedbackText.className = '';
+                }, 1500); // Increased timeout for confetti
             } else {
                 speechFeedbackText.textContent = `שמעתי "${spokenWord}". נסה שוב.`;
+                speechFeedbackText.classList.add('incorrect', 'shake');
             }
         };
 
         recognition.onerror = (event) => {
             console.error('Speech recognition error:', event.error);
+            // Clear previous animations
+            speechFeedbackText.className = '';
+            speechFeedbackText.classList.add('incorrect', 'shake');
+
             if (event.error === 'no-speech') {
                 speechFeedbackText.textContent = 'לא שמעתי כלום. נסה שוב.';
             } else if (event.error === 'not-allowed') {
                 speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון.';
-            }
-            else {
+            } else {
                 speechFeedbackText.textContent = 'אופס, קרתה שגיאה. נסה שוב.';
             }
         };
@@ -263,17 +289,78 @@ document.addEventListener('DOMContentLoaded', () => {
 
     startGameBtn.addEventListener('click', startGame);
     recordBtn.addEventListener('click', handleSpeechRecognition);
-    toggleModeBtn.addEventListener('click', () => {
-        const password = prompt("הזן סיסמה כדי לשנות מצב משחק:", "");
-        if (password === "6417") {
-            isClassicMode = !isClassicMode;
-            const newMode = isClassicMode ? "קלאסי (ללא הקלטה)" : "הקלטה";
-            alert(`מצב המשחק שונה ל: ${newMode}`);
-            // Reload the current word to reflect the new mode
-            loadNewWord();
-        } else if (password) { // Only show alert if a password was entered
-            alert("סיסמה שגויה.");
+
+    // --- Password Modal Logic ---
+    function openPasswordModal() {
+        passwordModal.classList.remove('hidden');
+        passwordFeedback.textContent = '';
+        passwordInputs.forEach(input => input.value = '');
+        passwordInputs[0].focus();
+    }
+
+    function closePasswordModal() {
+        passwordModal.classList.add('hidden');
+    }
+
+    function handlePasswordInput(e) {
+        const input = e.target;
+        const value = input.value;
+        const fieldIndex = passwordInputs.indexOf(input);
+
+        // If the input is a digit, move to the next field
+        if (/^[0-9]$/.test(value)) {
+            if (fieldIndex < passwordInputs.length - 1) {
+                passwordInputs[fieldIndex + 1].focus();
+            } else {
+                // Last digit entered, check the code
+                checkPassword();
+            }
         }
+    }
+
+    function handlePasswordKeydown(e) {
+        const input = e.target;
+        const fieldIndex = passwordInputs.indexOf(input);
+
+        // Handle backspace to move to the previous field
+        if (e.key === 'Backspace' && !input.value && fieldIndex > 0) {
+            passwordInputs[fieldIndex - 1].focus();
+        }
+    }
+
+    function checkPassword() {
+        const enteredCode = passwordInputs.map(input => input.value).join('');
+        if (enteredCode === "6417") {
+            passwordFeedback.textContent = 'סיסמה נכונה!';
+            passwordFeedback.className = 'correct feedback';
+
+            setTimeout(() => {
+                closePasswordModal();
+                isClassicMode = !isClassicMode;
+                const newMode = isClassicMode ? "קלאסי (ללא הקלטה)" : "הקלטה";
+                alert(`מצב המשחק שונה ל: ${newMode}`);
+                loadNewWord();
+            }, 500);
+
+        } else {
+            passwordFeedback.textContent = 'סיסמה שגויה. נסה שוב.';
+            passwordFeedback.className = 'incorrect feedback';
+            passwordInputs.forEach(input => {
+                input.classList.add('shake');
+            });
+            setTimeout(() => {
+                passwordInputs.forEach(input => input.classList.remove('shake'));
+                passwordInputs[0].focus();
+                passwordInputs.forEach(input => input.value = '');
+            }, 500);
+        }
+    }
+
+    toggleModeBtn.addEventListener('click', openPasswordModal);
+    closeBtn.addEventListener('click', closePasswordModal);
+    passwordInputs.forEach(input => {
+        input.addEventListener('input', handlePasswordInput);
+        input.addEventListener('keydown', handlePasswordKeydown);
     });
 
     optionElements.forEach(el => {
