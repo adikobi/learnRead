@@ -234,7 +234,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     speechFeedbackText.textContent = '';
                 }, 1000);
             } else {
-                speechFeedbackText.textContent = `שמעתי "${spokenWord}". נסה שוב.`;
+                // Temporary debug message to identify the root cause of the mismatch.
+                let correctNormalizedWordForDebug;
+                if (Array.isArray(correctWordData)) {
+                    correctNormalizedWordForDebug = `[${correctWordData.map(w => normalizeText(w)).join(', ')}]`;
+                } else {
+                    correctNormalizedWordForDebug = normalizeText(correctWordData);
+                }
+                speechFeedbackText.textContent = `דיבאג: "${normalizedSpokenWord}" != "${correctNormalizedWordForDebug}"`;
             }
         };
 
@@ -295,22 +302,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Normalizes text for comparison by removing nikkud, punctuation, and extra whitespace.
-     * Uses Unicode normalization for more robust cleaning across different platforms.
+     * Uses a multi-stage approach for maximum robustness across platforms.
      * @param {string} text The text to normalize.
      * @returns {string} The normalized text.
      */
     function normalizeText(text) {
         if (!text) return "";
 
-        // Use Unicode normalization (NFD) to separate base characters from combining marks,
-        // remove the marks, and then re-compose (NFC). This is more robust than simple regex
-        // and handles Hebrew nikkud as well as other potential accents or marks from different OS/browsers.
+        // Stage 1: General Unicode normalization to decompose characters and remove most diacritics.
         let normalized = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-        // Also remove common punctuation that might be added by speech-to-text engines
+        // Stage 2: Explicitly remove Hebrew-specific nikkud characters that might be missed.
+        normalized = normalized.replace(/[\u0591-\u05C7]/g, "");
+
+        // Stage 3: Remove common punctuation that might be added by speech-to-text engines.
         normalized = normalized.replace(/[.,?!'"]/g, "");
 
-        // Trim whitespace from the start and end and re-normalize
+        // Stage 4: Trim whitespace and re-compose the string to its normal form.
         return normalized.trim().normalize("NFC");
     }
 
