@@ -22,9 +22,14 @@
     </div>
 
     <div id="game-screen" class="screen">
+        <button id="toggle-mode-btn">⚙️</button>
         <div id="word-container">
             <h2 id="word"></h2>
         </div>
+        <div id="speech-feedback-container">
+            <p id="speech-feedback-text"></p>
+        </div>
+        <button id="record-btn">🎤 הקלט</button>
         <div id="options-container">
             <div class="option" id="option1"></div>
             <div class="option" id="option2"></div>
@@ -32,6 +37,22 @@
         </div>
         <div id="feedback-container">
             <p id="feedback-text"></p>
+        </div>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="password-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="close-btn">&times;</button>
+            <h2>הזן סיסמה</h2>
+            <p>יש להזין 4 ספרות כדי לשנות מצב</p>
+            <div id="password-input-container">
+                <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+            </div>
+            <p id="password-feedback" class="feedback"></p>
         </div>
     </div>
 

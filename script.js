@@ -11,12 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
         { word: 'כַּדּוּר', emoji: '⚽' }, { word: 'סֵפֶר', emoji: '📖' }, { word: 'מַטּוֹס', emoji: '✈️' },
         { word: 'גְּלִידָה', emoji: '🍦' }, { word: 'עֵץ', emoji: '🌳' }, { word: 'פִּטְרִיָּה', emoji: '🍄' },
         { word: 'פַּרְפַּר', emoji: '🦋' }, { word: 'צְפַרְדֵּעַ', emoji: '🐸' }, { word: 'דְּבוֹרָה', emoji: '🐝' },
-        { word: 'פִּיצָה', emoji: '🍕' }, { word: 'רַכֶּבֶת', emoji: '🚆' }, { word: 'מִטְרִיָּה', emoji: '☔' },
+        { word: ['מִטְרִיָּה', 'מטרייה'], emoji: '☔' },
         // Expansion 2 (25 words)
         { word: 'אֲבַטִּיחַ', emoji: '🍉' }, { word: 'תּוּת', emoji: '🍓' }, { word: 'עַגְבָנִיָּה', emoji: '🍅' },
         { word: 'גֶּזֶר', emoji: '🥕' }, { word: 'קוֹף', emoji: '🐵' }, { word: 'פָּרָה', emoji: '🐄' },
         { word: 'תַּרְנְגוֹל', emoji: '🐔' }, { word: 'סוּס', emoji: '🐴' }, { word: 'חַזִּיר', emoji: '🐷' },
-        { word: 'כִּבְשָׂה', emoji: '🐑' }, { word: 'אוֹפַנַּיִם', emoji: '🚲' }, { word: 'סִירָה', emoji: '⛵' },
+        { word: 'כִּבְשָׂה', emoji: '🐑' }, { word: ['אוֹפַנַּיִם', 'אופניים', 'אופנים'], emoji: '🚲' }, { word: 'סִירָה', emoji: '⛵' },
         { word: 'טִיל', emoji: '🚀' }, { word: 'מַסּוֹק', emoji: '🚁' }, { word: 'אַמְבּוּלַנְס', emoji: '🚑' },
         { word: 'כַּבָּאִית', emoji: '🚒' }, { word: 'אַרְמוֹן', emoji: '🏰' }, { word: 'עַיִן', emoji: '👁️' },
         { word: 'לֵב', emoji: '❤️' }, { word: 'יָד', emoji: '✋' }, { word: 'בָּלוֹן', emoji: '🎈' },
@@ -25,20 +25,20 @@ document.addEventListener('DOMContentLoaded', () => {
         // Expansion 3 (50 words)
         { word: 'שׁוּעָל', emoji: '🦊' }, { word: 'פַּנְדָּה', emoji: '🐼' }, { word: 'דֹּב', emoji: '🐻' },
         { word: 'זֶבְּרָה', emoji: '🦓' }, { word: 'גִ\'ירָפָה', emoji: '🦒' }, { word: 'תַּנִּין', emoji: '🐊' },
-        { word: 'צָב', emoji: '🐢' }, { word: 'לִוְיָתָן', emoji: '🐳' }, { word: 'דּוֹלְפִין', 'emoji': '🐬' },
-        { word: 'הַמְבּוּרְגֵּר', emoji: '🍔' }, { word: 'צִ\'יפְּס', emoji: '🍟' }, { word: 'סֻפְגָּנִיָּה', emoji: '🍩' },
-        { word: 'עוּגִיָּה', emoji: '🍪' }, { word: 'שׁוֹקוֹלָד', emoji: '🍫' }, { word: 'סֻכָּרִיָּה', emoji: '🍭' },
+        { word: 'צָב', emoji: '🐢' }, { word: ['לִוְיָתָן', 'לוויתן'], emoji: '🐳' }, { word: 'דּוֹלְפִין', 'emoji': '🐬' },
+        { word: 'הַמְבּוּרְגֵּר', emoji: '🍔' }, { word: 'צִ\'יפְּס', emoji: '🍟' }, { word: ['סֻפְגָּנִיָּה', 'סופגניה'], emoji: '🍩' },
+        { word: ['עוּגִיָּה', 'עוגייה'], emoji: '🍪' }, { word: 'שׁוֹקוֹלָד', emoji: '🍫' }, { word: ['סֻכָּרִיָּה', 'סוכריה', 'סכריה'], emoji: '🍭' },
         { word: 'פּוֹפְּקוֹרְן', emoji: '🍿' }, { word: 'בֵּיצָה', emoji: '🥚' }, { word: 'לֶחֶם', emoji: '🍞' },
         { word: 'חוּלְצָה', emoji: '👕' }, { word: 'מִכְנָסַיִם', emoji: '👖' }, { word: 'שִׂמְלָה', emoji: '👗' },
         { word: 'נַעַל', emoji: '👟' }, { word: 'כּוֹבַע', emoji: '👒' }, { word: 'גֶּרֶב', emoji: '🧦' },
-        { word: 'כְּפָפָה', emoji: '🧤' }, { word: 'צָעִיף', emoji: '🧣' }, { word: 'מִשְׁקָפַיִם', emoji: '👓' },
+        { word: 'כְּפָפָה', emoji: '🧤' }, { word: 'צָעִיף', emoji: '🧣' }, { word: ['מִשְׁקָפַיִם', 'משקפיים', 'משקפים'], emoji: '👓' },
         { word: 'כֶּתֶר', emoji: '👑' }, { word: 'קֶשֶׁת', emoji: '🌈' }, { word: 'הַר גַּעַשׁ', emoji: '🌋' },
         { word: 'גַּל', emoji: '🌊' }, { word: 'יָרֵחַ', emoji: '🌙' }, { word: 'שֶׁלֶג', emoji: '❄️' },
         { word: 'אֵשׁ', emoji: '🔥' }, { word: 'טִפָּה', emoji: '💧' }, { word: 'רוּחַ', emoji: '💨' },
         { word: 'בָּרָק', emoji: '⚡' }, { word: 'סוּפָה', emoji: '🌪️' }, { word: 'גִּיטָרָה', emoji: '🎸' },
         { word: 'פְּסַנְתֵּר', emoji: '🎹' }, { word: 'חֲצוֹצְרָה', emoji: '🎺' }, { word: 'כִּנּוֹר', emoji: '🎻' },
         { word: 'תֹּף', emoji: '🥁' }, { word: 'טֶלֶפוֹן', emoji: '📱' }, { word: 'מַחְשֵׁב', emoji: '💻' },
-        { word: 'טֶלֶוִיזְיָה', emoji: '📺' }, { word: 'נוּרָה', emoji: '💡' }, { word: 'יַהֲלוֹם', emoji: '💎' },
+        { word: ['טֶלֶוִיזְיָה', 'טלוויזיה', 'טלויזיה'], emoji: '📺' }, { word: 'נוּרָה', emoji: '💡' }, { word: 'יַהֲלוֹם', emoji: '💎' },
         { word: 'רוֹבּוֹט', emoji: '🤖' }
     ];
 
@@ -47,20 +47,48 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameScreen = document.getElementById('game-screen');
     const startGameBtn = document.getElementById('start-game-btn');
     const wordElement = document.getElementById('word');
+    const optionsContainer = document.getElementById('options-container');
     const optionElements = [
         document.getElementById('option1'),
         document.getElementById('option2'),
         document.getElementById('option3')
     ];
     const feedbackText = document.getElementById('feedback-text');
+    const recordBtn = document.getElementById('record-btn');
+    const speechFeedbackText = document.getElementById('speech-feedback-text');
     const confettiCanvas = document.getElementById('confetti-canvas');
     const shootConfetti = confetti.create(confettiCanvas, {
         resize: true,
         useWorker: true,
     });
+    const toggleModeBtn = document.getElementById('toggle-mode-btn');
+
+    // Password Modal Elements
+    const passwordModal = document.getElementById('password-modal');
+    const closeBtn = passwordModal.querySelector('.close-btn');
+    const passwordInputs = [...passwordModal.querySelectorAll('.password-digit')];
+    const passwordFeedback = document.getElementById('password-feedback');
 
     let currentWordIndex = 0;
     let isChecking = false; // Prevents multiple clicks while checking answer
+    let isClassicMode = false; // false = recording mode, true = classic mode (no recording)
+
+    // --- Speech Recognition Setup ---
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition;
+
+    // Check if the browser supports the API
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'he-IL'; // Set language to Hebrew
+        recognition.continuous = false; // Stop listening after the first utterance
+        recognition.interimResults = false; // Get final results only
+    } else {
+        console.error("Speech Recognition not supported in this browser.");
+        // Hide the record button if not supported
+        recordBtn.classList.add('hidden');
+    }
+
 
     // --- Game Logic ---
 
@@ -73,41 +101,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function loadNewWord() {
-        
-        document.getElementById('options-container').classList.remove('no-hover');
         isChecking = false;
         feedbackText.textContent = '';
         feedbackText.className = '';
+        speechFeedbackText.textContent = '';
 
-        
-        // Get the current word object
-        const currentWord = gameData[currentWordIndex];
-        wordElement.textContent = currentWord.word;
-
-        // Get two other random emojis for incorrect options
-        let incorrectOptions = [];
-        while (incorrectOptions.length < 2) {
-            const randomIndex = Math.floor(Math.random() * gameData.length);
-            const randomEmoji = gameData[randomIndex].emoji;
-            if (randomEmoji !== currentWord.emoji && !incorrectOptions.includes(randomEmoji)) {
-                incorrectOptions.push(randomEmoji);
-            }
-        }
-
-        // Create the options array and shuffle it
-        const options = [currentWord.emoji, ...incorrectOptions];
-        shuffleArray(options);
-    
-        // reset hover:
+        // Reset all option styles to prevent visual glitches (especially on iOS)
         optionElements.forEach(option => {
-            option.classList.remove('hover-active'); 
+            option.classList.remove('hover-active', 'shake');
+            option.style.transform = 'none'; // Force-reset transform property for iOS rendering bug
         });
-                               
-        // Display the options
-        optionElements.forEach((el, index) => {
-            el.textContent = options[index];
-            el.dataset.emoji = options[index]; // Store emoji in data attribute
-        });
+
+        // Get the current word object
+        const currentWordData = gameData[currentWordIndex];
+        // If the word data is an array, show the first (primary) spelling. Otherwise, show the word string.
+        wordElement.textContent = Array.isArray(currentWordData.word) ? currentWordData.word[0] : currentWordData.word;
+
+        if (isClassicMode) {
+            // In classic mode, hide the record button and show the options immediately.
+            recordBtn.classList.add('hidden');
+            showOptions();
+        } else {
+            // In recording mode, hide options and show the record button.
+            optionsContainer.classList.add('hidden');
+            recordBtn.classList.remove('hidden');
+            recordBtn.disabled = false;
+            recordBtn.classList.remove('recording');
+        }
     }
 
     function checkAnswer(selectedElement) {
@@ -157,15 +177,208 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function showOptions() {
+        // Get the current word object
+        const currentWord = gameData[currentWordIndex];
+
+        // Get two other random emojis for incorrect options
+        let incorrectOptions = [];
+        while (incorrectOptions.length < 2) {
+            const randomIndex = Math.floor(Math.random() * gameData.length);
+            const randomEmoji = gameData[randomIndex].emoji;
+            if (randomEmoji !== currentWord.emoji && !incorrectOptions.includes(randomEmoji)) {
+                incorrectOptions.push(randomEmoji);
+            }
+        }
+
+        // Create the options array and shuffle it
+        const options = [currentWord.emoji, ...incorrectOptions];
+        shuffleArray(options);
+
+        // reset hover:
+        optionElements.forEach(option => {
+            option.classList.remove('hover-active');
+        });
+
+        // Display the options
+        optionElements.forEach((el, index) => {
+            el.textContent = options[index];
+            el.dataset.emoji = options[index]; // Store emoji in data attribute
+        });
+
+        // Show the container
+        optionsContainer.classList.remove('hidden');
+        optionsContainer.classList.remove('no-hover');
+    }
+
+    function handleSpeechRecognition() {
+        if (!recognition) {
+            speechFeedbackText.textContent = "דפדפן לא נתמך.";
+            return;
+        }
+        recordBtn.disabled = true;
+        recordBtn.classList.add('recording');
+        speechFeedbackText.textContent = 'מקליט...';
+        recognition.start();
+    }
+
+    if (recognition) {
+        recognition.onresult = (event) => {
+            recognition.stop(); // Explicitly stop the recognition service
+            const spokenWord = event.results[0][0].transcript;
+            const correctWordData = gameData[currentWordIndex].word;
+            const normalizedSpokenWord = normalizeText(spokenWord);
+
+            let isCorrect = false;
+            if (Array.isArray(correctWordData)) {
+                // If it's an array of possible words, check if the spoken word matches any of them.
+                isCorrect = correctWordData.some(word => normalizeText(word) === normalizedSpokenWord);
+            } else {
+                // Otherwise, it's a single string; compare directly.
+                isCorrect = normalizeText(correctWordData) === normalizedSpokenWord;
+            }
+
+            // Clear previous animations
+            speechFeedbackText.className = '';
+
+            if (isCorrect) {
+                speechFeedbackText.textContent = 'נהדר!';
+                speechFeedbackText.classList.add('correct');
+                shootConfetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+
+                recordBtn.disabled = true; // Prevent clicking again during timeout
+                setTimeout(() => {
+                    recordBtn.classList.add('hidden');
+                    showOptions();
+                    speechFeedbackText.textContent = '';
+                    speechFeedbackText.className = '';
+                }, 1500); // Increased timeout for confetti
+            } else {
+                speechFeedbackText.textContent = `שמעתי "${spokenWord}". נסה שוב.`;
+                speechFeedbackText.classList.add('incorrect', 'shake');
+            }
+        };
+
+        recognition.onerror = (event) => {
+            recognition.stop(); // Explicitly stop the recognition service
+            console.error('Speech recognition error:', event.error);
+            // Clear previous animations
+            speechFeedbackText.className = '';
+            speechFeedbackText.classList.add('incorrect', 'shake');
+
+            if (event.error === 'no-speech') {
+                speechFeedbackText.textContent = 'לא שמעתי כלום. נסה שוב.';
+            } else if (event.error === 'not-allowed') {
+                speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון.';
+            } else {
+                speechFeedbackText.textContent = 'אופס, קרתה שגיאה. נסה שוב.';
+            }
+        };
+
+        recognition.onend = () => {
+            recordBtn.classList.remove('recording');
+            // Re-enable only if it's not hidden (i.e. recognition was successful)
+            if (!recordBtn.classList.contains('hidden')) {
+                recordBtn.disabled = false;
+            }
+        };
+    }
+
     // --- Event Listeners ---
 
     startGameBtn.addEventListener('click', startGame);
+    recordBtn.addEventListener('click', handleSpeechRecognition);
+
+    // --- Password Modal Logic ---
+    function openPasswordModal() {
+        passwordModal.classList.remove('hidden');
+        passwordFeedback.textContent = '';
+        passwordInputs.forEach(input => input.value = '');
+        passwordInputs[0].focus();
+    }
+
+    function closePasswordModal() {
+        passwordModal.classList.add('hidden');
+    }
+
+    function handlePasswordInput(e) {
+        const input = e.target;
+        const value = input.value;
+        const fieldIndex = passwordInputs.indexOf(input);
+
+        // If the input is a digit, move to the next field
+        if (/^[0-9]$/.test(value)) {
+            if (fieldIndex < passwordInputs.length - 1) {
+                passwordInputs[fieldIndex + 1].focus();
+            } else {
+                // Last digit entered, check the code
+                checkPassword();
+            }
+        }
+    }
+
+    function handlePasswordKeydown(e) {
+        const input = e.target;
+        const fieldIndex = passwordInputs.indexOf(input);
+
+        // Handle backspace to move to the previous field
+        if (e.key === 'Backspace' && !input.value && fieldIndex > 0) {
+            passwordInputs[fieldIndex - 1].focus();
+        }
+    }
+
+    function checkPassword() {
+        const enteredCode = passwordInputs.map(input => input.value).join('');
+        if (enteredCode === "6417") {
+            passwordFeedback.textContent = 'סיסמה נכונה!';
+            passwordFeedback.className = 'correct feedback';
+
+            setTimeout(() => {
+                closePasswordModal();
+                isClassicMode = !isClassicMode;
+                const newMode = isClassicMode ? "קלאסי (ללא הקלטה)" : "הקלטה";
+                alert(`מצב המשחק שונה ל: ${newMode}`);
+                loadNewWord();
+            }, 500);
+
+        } else {
+            passwordFeedback.textContent = 'סיסמה שגויה. נסה שוב.';
+            passwordFeedback.className = 'incorrect feedback';
+            passwordInputs.forEach(input => {
+                input.classList.add('shake');
+            });
+            setTimeout(() => {
+                passwordInputs.forEach(input => input.classList.remove('shake'));
+                passwordInputs[0].focus();
+                passwordInputs.forEach(input => input.value = '');
+            }, 500);
+        }
+    }
+
+    toggleModeBtn.addEventListener('click', openPasswordModal);
+    closeBtn.addEventListener('click', closePasswordModal);
+    passwordInputs.forEach(input => {
+        input.addEventListener('input', handlePasswordInput);
+        input.addEventListener('keydown', handlePasswordKeydown);
+    });
 
     optionElements.forEach(el => {
         el.addEventListener('click', (e) => {
             e.currentTarget.classList.add('hover-active');
             checkAnswer(e.target); // Pass the element itself
         });
+    });
+
+    // Stop microphone if the user switches tabs or minimizes the app
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && recognition) {
+            recognition.abort();
+            console.log("Recognition aborted due to page visibility change.");
+        }
     });
 
     // --- Utility Functions ---
@@ -176,6 +389,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const j = Math.floor(Math.random() * (i + 1));
             [array[i], array[j]] = [array[j], array[i]];
         }
+    }
+
+    /**
+     * Normalizes text for comparison by removing nikkud, punctuation, and extra whitespace.
+     * Uses a multi-stage approach for maximum robustness across platforms.
+     * @param {string} text The text to normalize.
+     * @returns {string} The normalized text.
+     */
+    function normalizeText(text) {
+        if (!text) return "";
+
+        // Stage 1: Remove invisible Unicode control characters, like the Right-to-Left Mark (RLM).
+        // This is the key fix for the mobile bug.
+        let normalized = text.replace(/[\u200F]/g, "");
+
+        // Stage 2: General Unicode normalization to decompose characters and remove most diacritics.
+        normalized = normalized.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+        // Stage 3: Explicitly remove Hebrew-specific nikkud characters that might be missed.
+        normalized = normalized.replace(/[\u0591-\u05C7]/g, "");
+
+        // Stage 4: Remove common punctuation that might be added by speech-to-text engines.
+        normalized = normalized.replace(/[.,?!'"]/g, "");
+
+        // Stage 5: Trim whitespace and re-compose the string to its normal form.
+        return normalized.trim().normalize("NFC");
     }
 
     // Initial setup
