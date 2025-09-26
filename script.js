@@ -223,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (recognition) {
         recognition.onresult = (event) => {
+            recognition.stop(); // Explicitly stop the recognition service
             const spokenWord = event.results[0][0].transcript;
             const correctWordData = gameData[currentWordIndex].word;
             const normalizedSpokenWord = normalizeText(spokenWord);
@@ -262,6 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         recognition.onerror = (event) => {
+            recognition.stop(); // Explicitly stop the recognition service
             console.error('Speech recognition error:', event.error);
             // Clear previous animations
             speechFeedbackText.className = '';
@@ -368,6 +370,14 @@ document.addEventListener('DOMContentLoaded', () => {
             e.currentTarget.classList.add('hover-active');
             checkAnswer(e.target); // Pass the element itself
         });
+    });
+
+    // Stop microphone if the user switches tabs or minimizes the app
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && recognition) {
+            recognition.abort();
+            console.log("Recognition aborted due to page visibility change.");
+        }
     });
 
     // --- Utility Functions ---
