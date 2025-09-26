@@ -47,12 +47,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameScreen = document.getElementById('game-screen');
     const startGameBtn = document.getElementById('start-game-btn');
     const wordElement = document.getElementById('word');
+    const optionsContainer = document.getElementById('options-container');
     const optionElements = [
         document.getElementById('option1'),
         document.getElementById('option2'),
         document.getElementById('option3')
     ];
     const feedbackText = document.getElementById('feedback-text');
+    const recordBtn = document.getElementById('record-btn');
+    const speechFeedbackText = document.getElementById('speech-feedback-text');
     const confettiCanvas = document.getElementById('confetti-canvas');
     const shootConfetti = confetti.create(confettiCanvas, {
         resize: true,
@@ -61,6 +64,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentWordIndex = 0;
     let isChecking = false; // Prevents multiple clicks while checking answer
+
+    // --- Speech Recognition Setup ---
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition;
+
+    // Check if the browser supports the API
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'he-IL'; // Set language to Hebrew
+        recognition.continuous = false; // Stop listening after the first utterance
+        recognition.interimResults = false; // Get final results only
+    } else {
+        console.error("Speech Recognition not supported in this browser.");
+        // Hide the record button if not supported
+        recordBtn.classList.add('hidden');
+    }
+
 
     // --- Game Logic ---
 
@@ -73,41 +93,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function loadNewWord() {
-        
-        document.getElementById('options-container').classList.remove('no-hover');
         isChecking = false;
         feedbackText.textContent = '';
         feedbackText.className = '';
+        speechFeedbackText.textContent = '';
 
-        
+        // Hide options, show record button
+        optionsContainer.classList.add('hidden');
+        recordBtn.classList.remove('hidden');
+        recordBtn.disabled = false;
+        recordBtn.classList.remove('recording');
+
+
         // Get the current word object
         const currentWord = gameData[currentWordIndex];
         wordElement.textContent = currentWord.word;
-
-        // Get two other random emojis for incorrect options
-        let incorrectOptions = [];
-        while (incorrectOptions.length < 2) {
-            const randomIndex = Math.floor(Math.random() * gameData.length);
-            const randomEmoji = gameData[randomIndex].emoji;
-            if (randomEmoji !== currentWord.emoji && !incorrectOptions.includes(randomEmoji)) {
-                incorrectOptions.push(randomEmoji);
-            }
-        }
-
-        // Create the options array and shuffle it
-        const options = [currentWord.emoji, ...incorrectOptions];
-        shuffleArray(options);
-    
-        // reset hover:
-        optionElements.forEach(option => {
-            option.classList.remove('hover-active'); 
-        });
-                               
-        // Display the options
-        optionElements.forEach((el, index) => {
-            el.textContent = options[index];
-            el.dataset.emoji = options[index]; // Store emoji in data attribute
-        });
     }
 
     function checkAnswer(selectedElement) {
@@ -157,9 +157,95 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function showOptions() {
+        // Get the current word object
+        const currentWord = gameData[currentWordIndex];
+
+        // Get two other random emojis for incorrect options
+        let incorrectOptions = [];
+        while (incorrectOptions.length < 2) {
+            const randomIndex = Math.floor(Math.random() * gameData.length);
+            const randomEmoji = gameData[randomIndex].emoji;
+            if (randomEmoji !== currentWord.emoji && !incorrectOptions.includes(randomEmoji)) {
+                incorrectOptions.push(randomEmoji);
+            }
+        }
+
+        // Create the options array and shuffle it
+        const options = [currentWord.emoji, ...incorrectOptions];
+        shuffleArray(options);
+
+        // reset hover:
+        optionElements.forEach(option => {
+            option.classList.remove('hover-active');
+        });
+
+        // Display the options
+        optionElements.forEach((el, index) => {
+            el.textContent = options[index];
+            el.dataset.emoji = options[index]; // Store emoji in data attribute
+        });
+
+        // Show the container
+        optionsContainer.classList.remove('hidden');
+        optionsContainer.classList.remove('no-hover');
+    }
+
+    function handleSpeechRecognition() {
+        if (!recognition) {
+            speechFeedbackText.textContent = "דפדפן לא נתמך.";
+            return;
+        }
+        recordBtn.disabled = true;
+        recordBtn.classList.add('recording');
+        speechFeedbackText.textContent = 'מקליט...';
+        recognition.start();
+    }
+
+    if (recognition) {
+        recognition.onresult = (event) => {
+            const spokenWord = event.results[0][0].transcript.trim();
+            const currentWord = gameData[currentWordIndex].word;
+
+            // Using a function to remove nikkud for comparison
+            if (removeNikkud(spokenWord) === removeNikkud(currentWord)) {
+                speechFeedbackText.textContent = 'נהדר!';
+                recordBtn.disabled = true; // Prevent clicking again during timeout
+                setTimeout(() => {
+                    recordBtn.classList.add('hidden');
+                    showOptions();
+                    speechFeedbackText.textContent = '';
+                }, 1000);
+            } else {
+                speechFeedbackText.textContent = `שמעתי "${spokenWord}". נסה שוב.`;
+            }
+        };
+
+        recognition.onerror = (event) => {
+            console.error('Speech recognition error:', event.error);
+            if (event.error === 'no-speech') {
+                speechFeedbackText.textContent = 'לא שמעתי כלום. נסה שוב.';
+            } else if (event.error === 'not-allowed') {
+                speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון.';
+            }
+            else {
+                speechFeedbackText.textContent = 'אופס, קרתה שגיאה. נסה שוב.';
+            }
+        };
+
+        recognition.onend = () => {
+            recordBtn.classList.remove('recording');
+            // Re-enable only if it's not hidden (i.e. recognition was successful)
+            if (!recordBtn.classList.contains('hidden')) {
+                recordBtn.disabled = false;
+            }
+        };
+    }
+
     // --- Event Listeners ---
 
     startGameBtn.addEventListener('click', startGame);
+    recordBtn.addEventListener('click', handleSpeechRecognition);
 
     optionElements.forEach(el => {
         el.addEventListener('click', (e) => {
@@ -176,6 +262,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const j = Math.floor(Math.random() * (i + 1));
             [array[i], array[j]] = [array[j], array[i]];
         }
+    }
+
+    /**
+     * Removes Hebrew vowel points (nikkud) from a string.
+     * @param {string} text The text with nikkud.
+     * @returns {string} The text without nikkud.
+     */
+    function removeNikkud(text) {
+        // This regex matches all Hebrew vowel points and diacritics.
+        return text.replace(/[\u0591-\u05C7]/g, "");
     }
 
     // Initial setup

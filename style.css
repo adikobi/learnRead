@@ -66,9 +66,63 @@ body {
     transition: background-color 0.3s;
 }
 
-#start-game-btn:hover {
+#start-game-btn:hover, #record-btn:hover {
     background-color: #45a049;
 }
+
+/* Speech Recognition Elements */
+#record-btn {
+    font-family: 'Heebo', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 50px;
+    background-color: #ff6347; /* Tomato color for contrast */
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+#record-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+#record-btn.recording {
+    animation: pulse-red 1.5s infinite;
+}
+
+
+@keyframes pulse-red {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 99, 71, 0.7);
+    }
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 10px 20px rgba(255, 99, 71, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 99, 71, 0);
+    }
+}
+
+
+#speech-feedback-container {
+    height: 30px; /* Reserve space for feedback */
+    margin-top: 10px;
+}
+
+#speech-feedback-text {
+    font-size: 1.2rem;
+    color: #555;
+    font-weight: 700;
+}
+
 
 /* Canvas for Confetti */
 #confetti-canvas {
@@ -176,4 +230,9 @@ body {
 @keyframes blink-caret {
   from, to { border-color: transparent }
   50% { border-color: orange; }
+}
+
+/* Utility class for hiding elements */
+.hidden {
+    display: none !important;
 }
