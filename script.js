@@ -109,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Reset all option styles to prevent visual glitches (especially on iOS)
         optionElements.forEach(option => {
             option.classList.remove('hover-active', 'shake');
+            option.style.transform = 'none'; // Force-reset transform property for iOS rendering bug
         });
 
         // Get the current word object
