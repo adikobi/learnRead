@@ -234,14 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     speechFeedbackText.textContent = '';
                 }, 1000);
             } else {
-                // Temporary debug message to identify the root cause of the mismatch.
-                let correctNormalizedWordForDebug;
-                if (Array.isArray(correctWordData)) {
-                    correctNormalizedWordForDebug = `[${correctWordData.map(w => normalizeText(w)).join(', ')}]`;
-                } else {
-                    correctNormalizedWordForDebug = normalizeText(correctWordData);
-                }
-                speechFeedbackText.textContent = `דיבאג: "${normalizedSpokenWord}" != "${correctNormalizedWordForDebug}"`;
+                speechFeedbackText.textContent = `שמעתי "${spokenWord}". נסה שוב.`;
             }
         };
 
@@ -309,16 +302,20 @@ document.addEventListener('DOMContentLoaded', () => {
     function normalizeText(text) {
         if (!text) return "";
 
-        // Stage 1: General Unicode normalization to decompose characters and remove most diacritics.
-        let normalized = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        // Stage 1: Remove invisible Unicode control characters, like the Right-to-Left Mark (RLM).
+        // This is the key fix for the mobile bug.
+        let normalized = text.replace(/[\u200F]/g, "");
 
-        // Stage 2: Explicitly remove Hebrew-specific nikkud characters that might be missed.
+        // Stage 2: General Unicode normalization to decompose characters and remove most diacritics.
+        normalized = normalized.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+        // Stage 3: Explicitly remove Hebrew-specific nikkud characters that might be missed.
         normalized = normalized.replace(/[\u0591-\u05C7]/g, "");
 
-        // Stage 3: Remove common punctuation that might be added by speech-to-text engines.
+        // Stage 4: Remove common punctuation that might be added by speech-to-text engines.
         normalized = normalized.replace(/[.,?!'"]/g, "");
 
-        // Stage 4: Trim whitespace and re-compose the string to its normal form.
+        // Stage 5: Trim whitespace and re-compose the string to its normal form.
         return normalized.trim().normalize("NFC");
     }
 
