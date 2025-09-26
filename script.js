@@ -11,12 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
         { word: 'כַּדּוּר', emoji: '⚽' }, { word: 'סֵפֶר', emoji: '📖' }, { word: 'מַטּוֹס', emoji: '✈️' },
         { word: 'גְּלִידָה', emoji: '🍦' }, { word: 'עֵץ', emoji: '🌳' }, { word: 'פִּטְרִיָּה', emoji: '🍄' },
         { word: 'פַּרְפַּר', emoji: '🦋' }, { word: 'צְפַרְדֵּעַ', emoji: '🐸' }, { word: 'דְּבוֹרָה', emoji: '🐝' },
-        { word: 'פִּיצָה', emoji: '🍕' }, { word: 'רַכֶּבֶת', emoji: '🚆' }, { word: 'מִטְרִיָּה', emoji: '☔' },
+        { word: ['מִטְרִיָּה', 'מטריה'], emoji: '☔' },
         // Expansion 2 (25 words)
         { word: 'אֲבַטִּיחַ', emoji: '🍉' }, { word: 'תּוּת', emoji: '🍓' }, { word: 'עַגְבָנִיָּה', emoji: '🍅' },
         { word: 'גֶּזֶר', emoji: '🥕' }, { word: 'קוֹף', emoji: '🐵' }, { word: 'פָּרָה', emoji: '🐄' },
         { word: 'תַּרְנְגוֹל', emoji: '🐔' }, { word: 'סוּס', emoji: '🐴' }, { word: 'חַזִּיר', emoji: '🐷' },
-        { word: 'כִּבְשָׂה', emoji: '🐑' }, { word: 'אוֹפַנַּיִם', emoji: '🚲' }, { word: 'סִירָה', emoji: '⛵' },
+        { word: 'כִּבְשָׂה', emoji: '🐑' }, { word: ['אוֹפַנַּיִם', 'אופנים'], emoji: '🚲' }, { word: 'סִירָה', emoji: '⛵' },
         { word: 'טִיל', emoji: '🚀' }, { word: 'מַסּוֹק', emoji: '🚁' }, { word: 'אַמְבּוּלַנְס', emoji: '🚑' },
         { word: 'כַּבָּאִית', emoji: '🚒' }, { word: 'אַרְמוֹן', emoji: '🏰' }, { word: 'עַיִן', emoji: '👁️' },
         { word: 'לֵב', emoji: '❤️' }, { word: 'יָד', emoji: '✋' }, { word: 'בָּלוֹן', emoji: '🎈' },
@@ -24,10 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
         { word: 'שָׁעוֹן', emoji: '⏰' },
         // Expansion 3 (50 words)
         { word: 'שׁוּעָל', emoji: '🦊' }, { word: 'פַּנְדָּה', emoji: '🐼' }, { word: 'דֹּב', emoji: '🐻' },
-        { word: 'זֶבְּרָה', emoji: '🦓' }, { word: 'גִ\'ירָפָה', emoji: '🦒' }, { word: 'תַּנִּין', emoji: '🐊' },
+        { word: 'זֶבְּרָה', emoji: '🦓' }, { word: ['גִ\'ירָפָה', 'גירפה'], emoji: '🦒' }, { word: 'תַּנִּין', emoji: '🐊' },
         { word: 'צָב', emoji: '🐢' }, { word: 'לִוְיָתָן', emoji: '🐳' }, { word: 'דּוֹלְפִין', 'emoji': '🐬' },
-        { word: 'הַמְבּוּרְגֵּר', emoji: '🍔' }, { word: 'צִ\'יפְּס', emoji: '🍟' }, { word: 'סֻפְגָּנִיָּה', emoji: '🍩' },
-        { word: 'עוּגִיָּה', emoji: '🍪' }, { word: 'שׁוֹקוֹלָד', emoji: '🍫' }, { word: 'סֻכָּרִיָּה', emoji: '🍭' },
+        { word: 'הַמְבּוּרְגֵּר', emoji: '🍔' }, { word: 'צִ\'יפְּס', emoji: '🍟' }, { word: ['סֻפְגָּנִיָּה', 'סופגניה'], emoji: '🍩' },
+        { word: ['עוּגִיָּה', 'עוגיה'], emoji: '🍪' }, { word: 'שׁוֹקוֹלָד', emoji: '🍫' }, { word: 'סֻכָּרִיָּה', emoji: '🍭' },
         { word: 'פּוֹפְּקוֹרְן', emoji: '🍿' }, { word: 'בֵּיצָה', emoji: '🥚' }, { word: 'לֶחֶם', emoji: '🍞' },
         { word: 'חוּלְצָה', emoji: '👕' }, { word: 'מִכְנָסַיִם', emoji: '👖' }, { word: 'שִׂמְלָה', emoji: '👗' },
         { word: 'נַעַל', emoji: '👟' }, { word: 'כּוֹבַע', emoji: '👒' }, { word: 'גֶּרֶב', emoji: '🧦' },
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { word: 'בָּרָק', emoji: '⚡' }, { word: 'סוּפָה', emoji: '🌪️' }, { word: 'גִּיטָרָה', emoji: '🎸' },
         { word: 'פְּסַנְתֵּר', emoji: '🎹' }, { word: 'חֲצוֹצְרָה', emoji: '🎺' }, { word: 'כִּנּוֹר', emoji: '🎻' },
         { word: 'תֹּף', emoji: '🥁' }, { word: 'טֶלֶפוֹן', emoji: '📱' }, { word: 'מַחְשֵׁב', emoji: '💻' },
-        { word: 'טֶלֶוִיזְיָה', emoji: '📺' }, { word: 'נוּרָה', emoji: '💡' }, { word: 'יַהֲלוֹם', emoji: '💎' },
+        { word: ['טֶלֶוִיזְיָה', 'טלויזיה'], emoji: '📺' }, { word: 'נוּרָה', emoji: '💡' }, { word: 'יַהֲלוֹם', emoji: '💎' },
         { word: 'רוֹבּוֹט', emoji: '🤖' }
     ];
 
@@ -61,9 +61,11 @@ document.addEventListener('DOMContentLoaded', () => {
         resize: true,
         useWorker: true,
     });
+    const toggleModeBtn = document.getElementById('toggle-mode-btn');
 
     let currentWordIndex = 0;
     let isChecking = false; // Prevents multiple clicks while checking answer
+    let isClassicMode = false; // false = recording mode, true = classic mode (no recording)
 
     // --- Speech Recognition Setup ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -98,16 +100,22 @@ document.addEventListener('DOMContentLoaded', () => {
         feedbackText.className = '';
         speechFeedbackText.textContent = '';
 
-        // Hide options, show record button
-        optionsContainer.classList.add('hidden');
-        recordBtn.classList.remove('hidden');
-        recordBtn.disabled = false;
-        recordBtn.classList.remove('recording');
-
-
         // Get the current word object
-        const currentWord = gameData[currentWordIndex];
-        wordElement.textContent = currentWord.word;
+        const currentWordData = gameData[currentWordIndex];
+        // If the word data is an array, show the first (primary) spelling. Otherwise, show the word string.
+        wordElement.textContent = Array.isArray(currentWordData.word) ? currentWordData.word[0] : currentWordData.word;
+
+        if (isClassicMode) {
+            // In classic mode, hide the record button and show the options immediately.
+            recordBtn.classList.add('hidden');
+            showOptions();
+        } else {
+            // In recording mode, hide options and show the record button.
+            optionsContainer.classList.add('hidden');
+            recordBtn.classList.remove('hidden');
+            recordBtn.disabled = false;
+            recordBtn.classList.remove('recording');
+        }
     }
 
     function checkAnswer(selectedElement) {
@@ -205,10 +213,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (recognition) {
         recognition.onresult = (event) => {
             const spokenWord = event.results[0][0].transcript;
-            const currentWord = gameData[currentWordIndex].word;
+            const correctWordData = gameData[currentWordIndex].word;
+            const normalizedSpokenWord = normalizeText(spokenWord);
 
-            // Using the more robust normalization function for comparison
-            if (normalizeText(spokenWord) === normalizeText(currentWord)) {
+            let isCorrect = false;
+            if (Array.isArray(correctWordData)) {
+                // If it's an array of possible words, check if the spoken word matches any of them.
+                isCorrect = correctWordData.some(word => normalizeText(word) === normalizedSpokenWord);
+            } else {
+                // Otherwise, it's a single string; compare directly.
+                isCorrect = normalizeText(correctWordData) === normalizedSpokenWord;
+            }
+
+            if (isCorrect) {
                 speechFeedbackText.textContent = 'נהדר!';
                 recordBtn.disabled = true; // Prevent clicking again during timeout
                 setTimeout(() => {
@@ -246,6 +263,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     startGameBtn.addEventListener('click', startGame);
     recordBtn.addEventListener('click', handleSpeechRecognition);
+    toggleModeBtn.addEventListener('click', () => {
+        const password = prompt("הזן סיסמה כדי לשנות מצב משחק:", "");
+        if (password === "6417") {
+            isClassicMode = !isClassicMode;
+            const newMode = isClassicMode ? "קלאסי (ללא הקלטה)" : "הקלטה";
+            alert(`מצב המשחק שונה ל: ${newMode}`);
+            // Reload the current word to reflect the new mode
+            loadNewWord();
+        } else if (password) { // Only show alert if a password was entered
+            alert("סיסמה שגויה.");
+        }
+    });
 
     optionElements.forEach(el => {
         el.addEventListener('click', (e) => {

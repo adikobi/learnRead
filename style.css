@@ -236,3 +236,21 @@ body {
 .hidden {
     display: none !important;
 }
+
+/* Toggle Mode Button */
+#toggle-mode-btn {
+    position: absolute;
+    top: 15px;
+    left: 15px; /* Using left because of dir="rtl" */
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    z-index: 10;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+#toggle-mode-btn:hover {
+    opacity: 1;
+}
