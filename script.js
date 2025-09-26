@@ -204,11 +204,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (recognition) {
         recognition.onresult = (event) => {
-            const spokenWord = event.results[0][0].transcript.trim();
+            const spokenWord = event.results[0][0].transcript;
             const currentWord = gameData[currentWordIndex].word;
 
-            // Using a function to remove nikkud for comparison
-            if (removeNikkud(spokenWord) === removeNikkud(currentWord)) {
+            // Using the more robust normalization function for comparison
+            if (normalizeText(spokenWord) === normalizeText(currentWord)) {
                 speechFeedbackText.textContent = 'נהדר!';
                 recordBtn.disabled = true; // Prevent clicking again during timeout
                 setTimeout(() => {
@@ -265,13 +265,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Removes Hebrew vowel points (nikkud) from a string.
-     * @param {string} text The text with nikkud.
-     * @returns {string} The text without nikkud.
+     * Normalizes text for comparison by removing nikkud, punctuation, and extra whitespace.
+     * Uses Unicode normalization for more robust cleaning across different platforms.
+     * @param {string} text The text to normalize.
+     * @returns {string} The normalized text.
      */
-    function removeNikkud(text) {
-        // This regex matches all Hebrew vowel points and diacritics.
-        return text.replace(/[\u0591-\u05C7]/g, "");
+    function normalizeText(text) {
+        if (!text) return "";
+
+        // Use Unicode normalization (NFD) to separate base characters from combining marks,
+        // remove the marks, and then re-compose (NFC). This is more robust than simple regex
+        // and handles Hebrew nikkud as well as other potential accents or marks from different OS/browsers.
+        let normalized = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+        // Also remove common punctuation that might be added by speech-to-text engines
+        normalized = normalized.replace(/[.,?!'"]/g, "");
+
+        // Trim whitespace from the start and end and re-normalize
+        return normalized.trim().normalize("NFC");
     }
 
     // Initial setup
