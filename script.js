@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isChecking = false; // Prevents multiple clicks while checking answer
     let isClassicMode = false; // false = recording mode, true = classic mode (no recording)
     let recognitionTimeout; // Variable to hold the timeout ID
+    let recognitionTimedOut = false; // Flag to track if timeout occurred
 
     // --- Speech Recognition Setup ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -217,6 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
             speechFeedbackText.textContent = "דפדפן לא נתמך.";
             return;
         }
+        recognitionTimedOut = false; // Reset flag at the start
         console.log("Starting speech recognition...");
         recordBtn.disabled = true;
         recordBtn.classList.add('recording');
@@ -225,6 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Set a timeout to prevent the recording from running indefinitely
         recognitionTimeout = setTimeout(() => {
+            recognitionTimedOut = true; // Set the flag
             console.log("Recognition timed out after 10 seconds.");
             recognition.stop();
             speechFeedbackText.textContent = 'ההקלטה נמשכה זמן רב מדי, נסה שוב.';
@@ -236,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (recognition) {
         recognition.onresult = (event) => {
+            if (recognitionTimedOut) return; // Ignore if timed out
             clearTimeout(recognitionTimeout); // Clear the timeout
             recognition.stop(); // Explicitly stop the recognition service
             const spokenWord = event.results[0][0].transcript;
@@ -277,6 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         recognition.onerror = (event) => {
+            if (recognitionTimedOut) return; // Ignore if timed out
             clearTimeout(recognitionTimeout); // Clear the timeout
             recognition.stop(); // Explicitly stop the recognition service
             console.error('Speech recognition error:', event.error);
