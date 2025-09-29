@@ -330,6 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
         passwordModal.classList.remove('hidden');
         passwordFeedback.textContent = '';
         passwordInputs.forEach(input => input.value = '');
+        timeoutInput.value = recordingTimeoutSeconds; // Reset input to the currently active value
         passwordInputs[0].focus();
     }
 
@@ -369,6 +370,13 @@ document.addEventListener('DOMContentLoaded', () => {
             passwordFeedback.textContent = 'סיסמה נכונה!';
             passwordFeedback.className = 'correct feedback';
 
+            // Save the new timeout value since password is correct
+            const newTimeout = parseInt(timeoutInput.value, 10);
+            if (!isNaN(newTimeout) && newTimeout >= 1 && newTimeout <= 15) {
+                recordingTimeoutSeconds = newTimeout;
+                localStorage.setItem('recordingTimeout', recordingTimeoutSeconds);
+            }
+
             setTimeout(() => {
                 closePasswordModal();
                 isClassicMode = !isClassicMode;
@@ -391,17 +399,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Event Listeners ---
-
-    function saveTimeoutSetting() {
-        const newTimeout = parseInt(timeoutInput.value, 10);
-        if (!isNaN(newTimeout) && newTimeout >= 1 && newTimeout <= 15) {
-            recordingTimeoutSeconds = newTimeout;
-            localStorage.setItem('recordingTimeout', recordingTimeoutSeconds);
-        }
-    }
-
-    timeoutInput.addEventListener('change', saveTimeoutSetting);
     toggleModeBtn.addEventListener('click', openPasswordModal);
     closeBtn.addEventListener('click', closePasswordModal);
     passwordInputs.forEach(input => {
