@@ -226,9 +226,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Set a timeout to force stop recognition if it doesn't end on its own
         recognitionStopTimeout = setTimeout(() => {
-            console.log("Forcing recognition to stop after 5 seconds.");
+            console.log("Forcing recognition to stop after 7 seconds.");
             recognition.stop();
-        }, 5000); // 5 seconds
+        }, 7000); // 7 seconds
     }
 
     if (recognition) {
@@ -297,9 +297,9 @@ document.addEventListener('DOMContentLoaded', () => {
             recordBtn.classList.remove('recording');
 
             // If recognition stops but onresult/onerror never fired, the timeout was the cause.
-            // In this case, provide feedback to the user so they are not left without a response.
+            // In this case, provide a specific timeout message for diagnostics.
             if (!recognitionCompleted) {
-                speechFeedbackText.textContent = 'לא שמעתי כלום. נסה שוב.';
+                speechFeedbackText.textContent = 'ההקלטה עברה את הזמן המותר. נסה שוב.';
                 speechFeedbackText.className = 'incorrect shake';
             }
 
