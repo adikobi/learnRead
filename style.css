@@ -376,14 +376,17 @@ body {
 #settings-actions-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 20px; /* Increased gap for better separation */
     margin-top: 10px;
 }
 
 #settings-actions-container .setting-row {
-    margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
 }
 
 .settings-btn {
@@ -400,14 +403,16 @@ body {
 
 #save-timeout-btn {
     background-color: #1e90ff; /* Dodger Blue */
+    margin-left: 10px; /* Space between input and button */
 }
 #save-timeout-btn:hover {
     background-color: #1c86ee;
 }
 
 #change-mode-btn {
-    background-color: #ff6347; /* Tomato */
+    background-color: #6c757d; /* Grey for secondary action */
+    border: 2px solid #6c757d;
 }
 #change-mode-btn:hover {
-    background-color: #e5533d;
+    background-color: #5a6268;
 }

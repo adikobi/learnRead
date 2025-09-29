@@ -227,6 +227,11 @@ document.addEventListener('DOMContentLoaded', () => {
         speechFeedbackText.textContent = '';
         speechFeedbackText.className = '';
 
+        // Advanced fix for iOS/iPadOS: Resume AudioContext if it's suspended
+        if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+
         if (!recognition) {
             speechFeedbackText.textContent = "דפדפן לא נתמך.";
             return;
@@ -440,6 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
             recordingTimeoutSeconds = newTimeout;
             localStorage.setItem('recordingTimeout', recordingTimeoutSeconds);
             alert(`הטיימאווט נשמר: ${newTimeout} שניות.`);
+            closePasswordModal(); // Close modal after saving
         } else {
             alert('ערך טיימאווט לא חוקי. יש להזין מספר בין 1 ל-15.');
             timeoutInput.value = recordingTimeoutSeconds; // Reset to valid value
