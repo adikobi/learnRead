@@ -72,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentWordIndex = 0;
     let isChecking = false; // Prevents multiple clicks while checking answer
     let isClassicMode = false; // false = recording mode, true = classic mode (no recording)
+    let recognitionTimeout; // Variable to hold the timeout ID
 
     // --- Speech Recognition Setup ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -216,14 +217,26 @@ document.addEventListener('DOMContentLoaded', () => {
             speechFeedbackText.textContent = "דפדפן לא נתמך.";
             return;
         }
+        console.log("Starting speech recognition...");
         recordBtn.disabled = true;
         recordBtn.classList.add('recording');
         speechFeedbackText.textContent = 'מקליט...';
         recognition.start();
+
+        // Set a timeout to prevent the recording from running indefinitely
+        recognitionTimeout = setTimeout(() => {
+            console.log("Recognition timed out after 10 seconds.");
+            recognition.stop();
+            speechFeedbackText.textContent = 'ההקלטה נמשכה זמן רב מדי, נסה שוב.';
+            speechFeedbackText.className = 'incorrect shake';
+            recordBtn.classList.remove('recording');
+            recordBtn.disabled = false;
+        }, 10000); // 10 seconds
     }
 
     if (recognition) {
         recognition.onresult = (event) => {
+            clearTimeout(recognitionTimeout); // Clear the timeout
             recognition.stop(); // Explicitly stop the recognition service
             const spokenWord = event.results[0][0].transcript;
             const correctWordData = gameData[currentWordIndex].word;
@@ -264,6 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         recognition.onerror = (event) => {
+            clearTimeout(recognitionTimeout); // Clear the timeout
             recognition.stop(); // Explicitly stop the recognition service
             console.error('Speech recognition error:', event.error);
             // Clear previous animations
@@ -275,11 +289,12 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (event.error === 'not-allowed') {
                 speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון.';
             } else {
-                speechFeedbackText.textContent = 'אופס, קרתה שגיאה. נסה שוב.';
+                speechFeedbackText.textContent = `אופס, קרתה שגיאה: ${event.error}. נסה שוב.`;
             }
         };
 
         recognition.onend = () => {
+            clearTimeout(recognitionTimeout); // Ensure timeout is cleared
             recordBtn.classList.remove('recording');
             // Re-enable only if it's not hidden (i.e. recognition was successful)
             if (!recordBtn.classList.contains('hidden')) {
