@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isChecking = false; // Prevents multiple clicks while checking answer
     let isClassicMode = false; // false = recording mode, true = classic mode (no recording)
     let recognitionStopTimeout; // Variable to hold the timeout ID for stopping recognition
+    let recognitionCompleted = false; // Flag to track if recognition ended normally
 
     // --- Speech Recognition Setup ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -217,6 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
             speechFeedbackText.textContent = "דפדפן לא נתמך.";
             return;
         }
+        recognitionCompleted = false; // Reset the flag for the new attempt
         recordBtn.disabled = true;
         recordBtn.classList.add('recording');
         speechFeedbackText.textContent = 'מקליט...';
@@ -224,13 +226,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Set a timeout to force stop recognition if it doesn't end on its own
         recognitionStopTimeout = setTimeout(() => {
-            console.log("Forcing recognition to stop after 3 seconds.");
+            console.log("Forcing recognition to stop after 5 seconds.");
             recognition.stop();
-        }, 3000); // 3 seconds
+        }, 5000); // 5 seconds
     }
 
     if (recognition) {
         recognition.onresult = (event) => {
+            recognitionCompleted = true;
             clearTimeout(recognitionStopTimeout);
             recognition.stop(); // Explicitly stop the recognition service
             const spokenWord = event.results[0][0].transcript;
@@ -272,6 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         recognition.onerror = (event) => {
+            recognitionCompleted = true;
             clearTimeout(recognitionStopTimeout);
             recognition.stop(); // Explicitly stop the recognition service
             console.error('Speech recognition error:', event.error);
@@ -292,13 +296,15 @@ document.addEventListener('DOMContentLoaded', () => {
             clearTimeout(recognitionStopTimeout);
             recordBtn.classList.remove('recording');
 
-            // If the "Recording..." message is still visible, it means the timeout likely
-            // stopped a stuck recognition before a result/error. Clear the message.
-            if (speechFeedbackText.textContent === 'מקליט...') {
-                speechFeedbackText.textContent = '';
+            // If recognition stops but onresult/onerror never fired, the timeout was the cause.
+            // In this case, provide feedback to the user so they are not left without a response.
+            if (!recognitionCompleted) {
+                speechFeedbackText.textContent = 'לא שמעתי כלום. נסה שוב.';
+                speechFeedbackText.className = 'incorrect shake';
             }
 
-            // Re-enable only if it's not hidden (i.e. recognition was successful)
+            // Re-enable the button for another try, but only if we are still in recording mode
+            // (i.e., a successful result hasn't hidden the button).
             if (!recordBtn.classList.contains('hidden')) {
                 recordBtn.disabled = false;
             }
