@@ -49,15 +49,21 @@
                 <label for="timeout-input">שניות להקלטה (1-15):</label>
                 <input type="number" id="timeout-input" min="1" max="15" value="6">
             </div>
-            <hr>
-            <p>כדי לשנות מצב משחק (קלאסי/הקלטה), יש להזין סיסמה בת 4 ספרות.</p>
-            <div id="password-input-container">
-                <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
-                <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
-                <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
-                <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+            <div id="password-prompt-container">
+                <hr>
+                <p>כדי לגשת להגדרות, יש להזין סיסמה:</p>
+                <div id="password-input-container">
+                    <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                    <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                    <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                    <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                </div>
+                <p id="password-feedback" class="feedback"></p>
             </div>
-            <p id="password-feedback" class="feedback"></p>
+            <div id="settings-actions-container" class="hidden">
+                 <button id="save-timeout-btn" class="settings-btn">שמור טיימאווט</button>
+                 <button id="change-mode-btn" class="settings-btn">שנה מצב משחק</button>
+            </div>
         </div>
     </div>
 

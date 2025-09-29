@@ -372,3 +372,36 @@ body {
     border-top: 1px solid #eee;
     margin: 20px 0;
 }
+
+#settings-actions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.settings-btn {
+    font-family: 'Heebo', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+#save-timeout-btn {
+    background-color: #1e90ff; /* Dodger Blue */
+}
+#save-timeout-btn:hover {
+    background-color: #1c86ee;
+}
+
+#change-mode-btn {
+    background-color: #ff6347; /* Tomato */
+}
+#change-mode-btn:hover {
+    background-color: #e5533d;
+}
