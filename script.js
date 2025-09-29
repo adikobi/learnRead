@@ -291,6 +291,13 @@ document.addEventListener('DOMContentLoaded', () => {
         recognition.onend = () => {
             clearTimeout(recognitionStopTimeout);
             recordBtn.classList.remove('recording');
+
+            // If the "Recording..." message is still visible, it means the timeout likely
+            // stopped a stuck recognition before a result/error. Clear the message.
+            if (speechFeedbackText.textContent === 'מקליט...') {
+                speechFeedbackText.textContent = '';
+            }
+
             // Re-enable only if it's not hidden (i.e. recognition was successful)
             if (!recordBtn.classList.contains('hidden')) {
                 recordBtn.disabled = false;
