@@ -68,10 +68,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeBtn = passwordModal.querySelector('.close-btn');
     const passwordInputs = [...passwordModal.querySelectorAll('.password-digit')];
     const passwordFeedback = document.getElementById('password-feedback');
+    const timeoutInput = document.getElementById('timeout-input');
 
     let currentWordIndex = 0;
     let isChecking = false; // Prevents multiple clicks while checking answer
     let isClassicMode = false; // false = recording mode, true = classic mode (no recording)
+    let recordingTimeoutSeconds = 6; // Default timeout
+    let recognitionTimeoutId = null; // To hold the timeout ID
+    let isTimeout = false; // Flag to check if recognition was stopped by our timer
 
     // --- Speech Recognition Setup ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -219,26 +223,46 @@ document.addEventListener('DOMContentLoaded', () => {
         recordBtn.disabled = true;
         recordBtn.classList.add('recording');
         speechFeedbackText.textContent = 'מקליט...';
+
+        // Clear any existing timeout
+        if (recognitionTimeoutId) {
+            clearTimeout(recognitionTimeoutId);
+        }
+
+        isTimeout = false; // Reset the timeout flag
+        // Set a timeout to stop recognition
+        recognitionTimeoutId = setTimeout(() => {
+            isTimeout = true; // Set the flag before stopping
+            recognition.stop();
+        }, recordingTimeoutSeconds * 1000);
+
         recognition.start();
     }
 
     if (recognition) {
         recognition.onresult = (event) => {
-            recognition.stop(); // Explicitly stop the recognition service
+            clearTimeout(recognitionTimeoutId);
             const spokenWord = event.results[0][0].transcript;
+
+            // If timeout happened, show what was heard and stop.
+            if (isTimeout) {
+                speechFeedbackText.textContent = `שמעתי "${spokenWord}", אבל הזמן עבר.`;
+                speechFeedbackText.className = 'incorrect shake';
+                isTimeout = false; // Reset flag
+                return;
+            }
+
+            recognition.stop(); // Explicitly stop the recognition service
             const correctWordData = gameData[currentWordIndex].word;
             const normalizedSpokenWord = normalizeText(spokenWord);
 
             let isCorrect = false;
             if (Array.isArray(correctWordData)) {
-                // If it's an array of possible words, check if the spoken word matches any of them.
                 isCorrect = correctWordData.some(word => normalizeText(word) === normalizedSpokenWord);
             } else {
-                // Otherwise, it's a single string; compare directly.
                 isCorrect = normalizeText(correctWordData) === normalizedSpokenWord;
             }
 
-            // Clear previous animations
             speechFeedbackText.className = '';
 
             if (isCorrect) {
@@ -249,14 +273,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     spread: 70,
                     origin: { y: 0.6 }
                 });
-
-                recordBtn.disabled = true; // Prevent clicking again during timeout
+                recordBtn.disabled = true;
                 setTimeout(() => {
                     recordBtn.classList.add('hidden');
                     showOptions();
                     speechFeedbackText.textContent = '';
                     speechFeedbackText.className = '';
-                }, 1500); // Increased timeout for confetti
+                }, 1500);
             } else {
                 speechFeedbackText.textContent = `שמעתי "${spokenWord}". נסה שוב.`;
                 speechFeedbackText.classList.add('incorrect', 'shake');
@@ -264,9 +287,18 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         recognition.onerror = (event) => {
+            clearTimeout(recognitionTimeoutId);
+
+            if (isTimeout) {
+                // This handles the case where the timeout occurs and no speech was detected.
+                speechFeedbackText.textContent = 'הזמן עבר, ולא שמעתי כלום. נסה שוב.';
+                speechFeedbackText.className = 'incorrect shake';
+                isTimeout = false; // Reset flag
+                return;
+            }
+
             recognition.stop(); // Explicitly stop the recognition service
             console.error('Speech recognition error:', event.error);
-            // Clear previous animations
             speechFeedbackText.className = '';
             speechFeedbackText.classList.add('incorrect', 'shake');
 
@@ -359,6 +391,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- Event Listeners ---
+
+    function saveTimeoutSetting() {
+        const newTimeout = parseInt(timeoutInput.value, 10);
+        if (!isNaN(newTimeout) && newTimeout >= 1 && newTimeout <= 15) {
+            recordingTimeoutSeconds = newTimeout;
+            localStorage.setItem('recordingTimeout', recordingTimeoutSeconds);
+        }
+    }
+
+    timeoutInput.addEventListener('change', saveTimeoutSetting);
     toggleModeBtn.addEventListener('click', openPasswordModal);
     closeBtn.addEventListener('click', closePasswordModal);
     passwordInputs.forEach(input => {
@@ -418,4 +461,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Initial setup
+    function loadSettings() {
+        const savedTimeout = localStorage.getItem('recordingTimeout');
+        if (savedTimeout) {
+            recordingTimeoutSeconds = parseInt(savedTimeout, 10);
+            timeoutInput.value = recordingTimeoutSeconds;
+        }
+    }
+
+    loadSettings();
 });

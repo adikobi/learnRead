@@ -44,8 +44,13 @@
     <div id="password-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <button class="close-btn">&times;</button>
-            <h2>הזן סיסמה</h2>
-            <p>יש להזין 4 ספרות כדי לשנות מצב</p>
+            <h2>הגדרות</h2>
+            <div class="setting-row">
+                <label for="timeout-input">שניות להקלטה (1-15):</label>
+                <input type="number" id="timeout-input" min="1" max="15" value="6">
+            </div>
+            <hr>
+            <p>כדי לשנות מצב משחק (קלאסי/הקלטה), יש להזין סיסמה בת 4 ספרות.</p>
             <div id="password-input-container">
                 <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
                 <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">

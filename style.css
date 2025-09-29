@@ -343,3 +343,32 @@ body {
     height: 20px;
     font-weight: 700;
 }
+
+/* New Setting Row in Modal */
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.setting-row label {
+    font-size: 1rem;
+    color: #555;
+}
+
+#timeout-input {
+    width: 60px;
+    padding: 5px;
+    font-size: 1rem;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    direction: ltr;
+}
+
+.modal-content hr {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 20px 0;
+}
