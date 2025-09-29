@@ -224,9 +224,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Set a timeout to force stop recognition if it doesn't end on its own
         recognitionStopTimeout = setTimeout(() => {
-            console.log("Forcing recognition to stop after 7 seconds.");
+            console.log("Forcing recognition to stop after 3 seconds.");
             recognition.stop();
-        }, 7000); // 7 seconds
+        }, 3000); // 3 seconds
     }
 
     if (recognition) {
