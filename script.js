@@ -72,8 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentWordIndex = 0;
     let isChecking = false; // Prevents multiple clicks while checking answer
     let isClassicMode = false; // false = recording mode, true = classic mode (no recording)
-    let recognitionTimeout; // Variable to hold the timeout ID
-    let recognitionTimedOut = false; // Flag to track if timeout occurred
+    let recognitionStopTimeout; // Variable to hold the timeout ID for stopping recognition
 
     // --- Speech Recognition Setup ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -218,29 +217,21 @@ document.addEventListener('DOMContentLoaded', () => {
             speechFeedbackText.textContent = "דפדפן לא נתמך.";
             return;
         }
-        recognitionTimedOut = false; // Reset flag at the start
-        console.log("Starting speech recognition...");
         recordBtn.disabled = true;
         recordBtn.classList.add('recording');
         speechFeedbackText.textContent = 'מקליט...';
         recognition.start();
 
-        // Set a timeout to prevent the recording from running indefinitely
-        recognitionTimeout = setTimeout(() => {
-            recognitionTimedOut = true; // Set the flag
-            console.log("Recognition timed out after 10 seconds.");
+        // Set a timeout to force stop recognition if it doesn't end on its own
+        recognitionStopTimeout = setTimeout(() => {
+            console.log("Forcing recognition to stop after 7 seconds.");
             recognition.stop();
-            speechFeedbackText.textContent = 'ההקלטה נמשכה זמן רב מדי, נסה שוב.';
-            speechFeedbackText.className = 'incorrect shake';
-            recordBtn.classList.remove('recording');
-            recordBtn.disabled = false;
-        }, 10000); // 10 seconds
+        }, 7000); // 7 seconds
     }
 
     if (recognition) {
         recognition.onresult = (event) => {
-            if (recognitionTimedOut) return; // Ignore if timed out
-            clearTimeout(recognitionTimeout); // Clear the timeout
+            clearTimeout(recognitionStopTimeout);
             recognition.stop(); // Explicitly stop the recognition service
             const spokenWord = event.results[0][0].transcript;
             const correctWordData = gameData[currentWordIndex].word;
@@ -281,8 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         recognition.onerror = (event) => {
-            if (recognitionTimedOut) return; // Ignore if timed out
-            clearTimeout(recognitionTimeout); // Clear the timeout
+            clearTimeout(recognitionStopTimeout);
             recognition.stop(); // Explicitly stop the recognition service
             console.error('Speech recognition error:', event.error);
             // Clear previous animations
@@ -299,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         recognition.onend = () => {
-            clearTimeout(recognitionTimeout); // Ensure timeout is cleared
+            clearTimeout(recognitionStopTimeout);
             recordBtn.classList.remove('recording');
             // Re-enable only if it's not hidden (i.e. recognition was successful)
             if (!recordBtn.classList.contains('hidden')) {
