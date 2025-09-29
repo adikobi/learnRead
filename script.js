@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (event.error === 'not-allowed') {
                 speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון.';
             } else {
-                speechFeedbackText.textContent = 'אופס, קרתה שגיאה. נסה שוב.';
+                speechFeedbackText.textContent = `אופס, קרתה שגיאה: ${event.error}. נסה שוב.`;
             }
         };
 
