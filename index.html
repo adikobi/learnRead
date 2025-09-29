@@ -45,10 +45,6 @@
         <div class="modal-content">
             <button class="close-btn">&times;</button>
             <h2>הגדרות</h2>
-            <div class="setting-row">
-                <label for="timeout-input">שניות להקלטה (1-15):</label>
-                <input type="number" id="timeout-input" min="1" max="15" value="6">
-            </div>
             <div id="password-prompt-container">
                 <hr>
                 <p>כדי לגשת להגדרות, יש להזין סיסמה:</p>
@@ -61,6 +57,10 @@
                 <p id="password-feedback" class="feedback"></p>
             </div>
             <div id="settings-actions-container" class="hidden">
+                <div class="setting-row">
+                    <label for="timeout-input">שניות להקלטה (1-15):</label>
+                    <input type="number" id="timeout-input" min="1" max="15" value="6">
+                </div>
                  <button id="save-timeout-btn" class="settings-btn">שמור טיימאווט</button>
                  <button id="change-mode-btn" class="settings-btn">שנה מצב משחק</button>
             </div>

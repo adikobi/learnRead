@@ -221,6 +221,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleSpeechRecognition() {
+        // Force reset UI state before starting a new recognition
+        recordBtn.classList.remove('recording');
+        recordBtn.disabled = false;
+        speechFeedbackText.textContent = '';
+        speechFeedbackText.className = '';
+
         if (!recognition) {
             speechFeedbackText.textContent = "דפדפן לא נתמך.";
             return;
@@ -334,9 +340,30 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    let audioContext;
+    let isAudioInitialized = false;
+
+    // Function to initialize audio context on user gesture, crucial for iOS/iPadOS
+    function initializeAudio() {
+        if (isAudioInitialized) return;
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            isAudioInitialized = true;
+            console.log("AudioContext initialized successfully.");
+        } catch (e) {
+            console.error("Could not initialize AudioContext:", e);
+        }
+    }
+
     // --- Event Listeners ---
 
-    startGameBtn.addEventListener('click', startGame);
+    startGameBtn.addEventListener('click', () => {
+        initializeAudio();
+        startGame();
+    });
     recordBtn.addEventListener('click', handleSpeechRecognition);
 
     // --- Password Modal Logic ---
