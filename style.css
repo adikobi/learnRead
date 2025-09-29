@@ -343,3 +343,50 @@ body {
     height: 20px;
     font-weight: 700;
 }
+
+/* Settings Section Styles */
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.setting-item label, .setting-item p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+#timeout-input {
+    width: 60px;
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: 'Heebo', sans-serif;
+}
+
+#change-mode-btn, #save-settings-btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 700;
+}
+
+#change-mode-btn {
+    background-color: #e9ecef;
+    color: #333;
+}
+
+#save-settings-btn {
+    width: 100%;
+    background-color: #28a745;
+    color: white;
+    margin-top: 10px;
+}

@@ -66,14 +66,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Password Modal Elements
     const passwordModal = document.getElementById('password-modal');
     const closeBtn = passwordModal.querySelector('.close-btn');
+    const passwordSection = document.getElementById('password-section');
+    const settingsSection = document.getElementById('settings-section');
     const passwordInputs = [...passwordModal.querySelectorAll('.password-digit')];
     const passwordFeedback = document.getElementById('password-feedback');
+    const timeoutInput = document.getElementById('timeout-input');
+    const currentModeText = document.getElementById('current-mode-text');
+    const changeModeBtn = document.getElementById('change-mode-btn');
+    const saveSettingsBtn = document.getElementById('save-settings-btn');
+
 
     let currentWordIndex = 0;
     let isChecking = false; // Prevents multiple clicks while checking answer
     let isClassicMode = false; // false = recording mode, true = classic mode (no recording)
     let recognitionStopTimeout; // Variable to hold the timeout ID for stopping recognition
-    let recognitionCompleted = false; // Flag to track if recognition ended normally
+    let recordingTimeoutSeconds = 7; // Default timeout
 
     // --- Speech Recognition Setup ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -218,7 +225,6 @@ document.addEventListener('DOMContentLoaded', () => {
             speechFeedbackText.textContent = "דפדפן לא נתמך.";
             return;
         }
-        recognitionCompleted = false; // Reset the flag for the new attempt
         recordBtn.disabled = true;
         recordBtn.classList.add('recording');
         speechFeedbackText.textContent = 'מקליט...';
@@ -226,14 +232,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Set a timeout to force stop recognition if it doesn't end on its own
         recognitionStopTimeout = setTimeout(() => {
-            console.log("Forcing recognition to stop after 7 seconds.");
+            console.log(`Forcing recognition to stop after ${recordingTimeoutSeconds} seconds.`);
             recognition.stop();
-        }, 7000); // 7 seconds
+        }, recordingTimeoutSeconds * 1000);
     }
 
     if (recognition) {
         recognition.onresult = (event) => {
-            recognitionCompleted = true;
             clearTimeout(recognitionStopTimeout);
             recognition.stop(); // Explicitly stop the recognition service
             const spokenWord = event.results[0][0].transcript;
@@ -275,7 +280,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         recognition.onerror = (event) => {
-            recognitionCompleted = true;
             clearTimeout(recognitionStopTimeout);
             recognition.stop(); // Explicitly stop the recognition service
             console.error('Speech recognition error:', event.error);
@@ -296,13 +300,6 @@ document.addEventListener('DOMContentLoaded', () => {
             clearTimeout(recognitionStopTimeout);
             recordBtn.classList.remove('recording');
 
-            // If recognition stops but onresult/onerror never fired, the timeout was the cause.
-            // In this case, provide a specific timeout message for diagnostics.
-            if (!recognitionCompleted) {
-                speechFeedbackText.textContent = 'ההקלטה עברה את הזמן המותר. נסה שוב.';
-                speechFeedbackText.className = 'incorrect shake';
-            }
-
             // Re-enable the button for another try, but only if we are still in recording mode
             // (i.e., a successful result hasn't hidden the button).
             if (!recordBtn.classList.contains('hidden')) {
@@ -319,6 +316,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Password Modal Logic ---
     function openPasswordModal() {
         passwordModal.classList.remove('hidden');
+        // Reset to the password entry view
+        settingsSection.classList.add('hidden');
+        passwordSection.classList.remove('hidden');
         passwordFeedback.textContent = '';
         passwordInputs.forEach(input => input.value = '');
         passwordInputs[0].focus();
@@ -361,11 +361,13 @@ document.addEventListener('DOMContentLoaded', () => {
             passwordFeedback.className = 'correct feedback';
 
             setTimeout(() => {
-                closePasswordModal();
-                isClassicMode = !isClassicMode;
-                const newMode = isClassicMode ? "קלאסי (ללא הקלטה)" : "הקלטה";
-                alert(`מצב המשחק שונה ל: ${newMode}`);
-                loadNewWord();
+                // Show settings, hide password entry
+                passwordSection.classList.add('hidden');
+                settingsSection.classList.remove('hidden');
+
+                // Populate settings with current values
+                timeoutInput.value = recordingTimeoutSeconds;
+                currentModeText.textContent = isClassicMode ? "קלאסי (ללא הקלטה)" : "הקלטה";
             }, 500);
 
         } else {
@@ -387,6 +389,23 @@ document.addEventListener('DOMContentLoaded', () => {
     passwordInputs.forEach(input => {
         input.addEventListener('input', handlePasswordInput);
         input.addEventListener('keydown', handlePasswordKeydown);
+    });
+
+    changeModeBtn.addEventListener('click', () => {
+        isClassicMode = !isClassicMode;
+        currentModeText.textContent = isClassicMode ? "קלאסי (ללא הקלטה)" : "הקלטה";
+        alert(`מצב המשחק שונה ל: ${currentModeText.textContent}`);
+    });
+
+    saveSettingsBtn.addEventListener('click', () => {
+        const newTimeout = parseInt(timeoutInput.value, 10);
+        if (newTimeout >= 1 && newTimeout <= 20) {
+            recordingTimeoutSeconds = newTimeout;
+            closePasswordModal();
+            loadNewWord(); // Reload word to apply new settings immediately
+        } else {
+            alert("יש להזין מספר שניות בין 1 ל-20.");
+        }
     });
 
     optionElements.forEach(el => {
