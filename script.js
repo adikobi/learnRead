@@ -79,8 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentWordIndex = 0;
     let isChecking = false; // Prevents multiple clicks while checking answer
     let isClassicMode = false; // false = recording mode, true = classic mode (no recording)
-    let recognitionStopTimeout; // Variable to hold the timeout ID for stopping recognition
     let recordingTimeoutSeconds = 7; // Default timeout
+    let recognitionStopTimeout; // Variable to hold the timeout ID
 
     // --- Speech Recognition Setup ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -292,16 +292,14 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (event.error === 'not-allowed') {
                 speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון.';
             } else {
-                speechFeedbackText.textContent = `אופס, קרתה שגיאה: ${event.error}. נסה שוב.`;
+                speechFeedbackText.textContent = 'אופס, קרתה שגיאה. נסה שוב.';
             }
         };
 
         recognition.onend = () => {
             clearTimeout(recognitionStopTimeout);
             recordBtn.classList.remove('recording');
-
-            // Re-enable the button for another try, but only if we are still in recording mode
-            // (i.e., a successful result hasn't hidden the button).
+            // Re-enable only if it's not hidden (i.e. recognition was successful)
             if (!recordBtn.classList.contains('hidden')) {
                 recordBtn.disabled = false;
             }
@@ -394,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
     changeModeBtn.addEventListener('click', () => {
         isClassicMode = !isClassicMode;
         currentModeText.textContent = isClassicMode ? "קלאסי (ללא הקלטה)" : "הקלטה";
-        alert(`מצב המשחק שונה ל: ${currentModeText.textContent}`);
+        alert(`מצב המשק שונה ל: ${currentModeText.textContent}`);
     });
 
     saveSettingsBtn.addEventListener('click', () => {
