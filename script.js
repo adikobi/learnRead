@@ -62,6 +62,21 @@ document.addEventListener('DOMContentLoaded', () => {
         useWorker: true,
     });
     const toggleModeBtn = document.getElementById('toggle-mode-btn');
+    const logContainer = document.getElementById('log-container');
+
+    /**
+     * Logs a message to the on-screen log container.
+     * @param {string} message The message to log.
+     */
+    function logToScreen(message) {
+        if (!logContainer) return;
+        const p = document.createElement('p');
+        const timestamp = new Date().toLocaleTimeString();
+        p.textContent = `[${timestamp}] ${message}`;
+        logContainer.appendChild(p);
+        // Auto-scroll to the latest log
+        logContainer.scrollTop = logContainer.scrollHeight;
+    }
 
     // Password Modal Elements
     const passwordModal = document.getElementById('password-modal');
@@ -106,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Game Logic ---
 
     function startGame() {
+        logToScreen('startGame: Function called.');
         shuffleArray(gameData); // Randomize the order of words
         currentWordIndex = 0; // Reset index for the new game
         splashScreen.classList.remove('active');
@@ -115,13 +131,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // On iPad, get the microphone stream once and keep it alive for the session.
         // This is the core of the fix to prevent timing-related errors.
         if (!isClassicMode && isIPad()) {
+            logToScreen('startGame: iPad detected. Attempting to acquire persistent stream.');
             navigator.mediaDevices.getUserMedia({ audio: true })
                 .then(stream => {
-                    console.log('Persistent microphone stream acquired for iPad.');
+                    logToScreen('startGame: Persistent stream acquired successfully.');
                     persistentStream = stream;
                 })
                 .catch(err => {
-                    console.error('Error acquiring persistent stream for iPad:', err);
+                    logToScreen(`startGame: FAILED to acquire persistent stream. Error: ${err.name} - ${err.message}`);
                     if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
                         speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון בהגדרות.';
                         recordBtn.disabled = true;
@@ -242,21 +259,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleSpeechRecognition() {
-        // UI cleanup and audio context check
+        logToScreen('handleSpeechRecognition: Function called.');
         recordBtn.classList.remove('recording');
-        recordBtn.disabled = true; // Disable button immediately
+        recordBtn.disabled = true;
         speechFeedbackText.textContent = '';
         speechFeedbackText.className = '';
         if (audioContext && audioContext.state === 'suspended') {
+            logToScreen('handleSpeechRecognition: Resuming suspended AudioContext.');
             audioContext.resume();
         }
 
         const startRecognitionWithStream = (stream) => {
-            // This function stops the microphone stream only if it's not the persistent iPad one.
+            logToScreen('startRecognitionWithStream: Function called.');
             const stopTemporaryStream = () => {
                 if (!isIPad() && stream) {
                     stream.getTracks().forEach(track => track.stop());
-                    console.log('Temporary stream for non-iPad device stopped.');
+                    logToScreen('stopTemporaryStream: Temporary stream stopped for non-iPad device.');
                 }
             };
 
@@ -265,7 +283,12 @@ document.addEventListener('DOMContentLoaded', () => {
             recognition.continuous = false;
             recognition.interimResults = false;
 
+            recognition.onstart = () => {
+                logToScreen('recognition.onstart: Event fired.');
+            };
+
             recognition.onresult = (event) => {
+                logToScreen(`recognition.onresult: Fired. Result: ${event.results[0][0].transcript}`);
                 const spokenWord = event.results[0][0].transcript;
                 const correctWordData = gameData[currentWordIndex].word;
                 const normalizedSpokenWord = normalizeText(spokenWord);
@@ -295,6 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             recognition.onerror = (event) => {
+                logToScreen(`recognition.onerror: Fired. Error: ${event.error}`);
                 stopTemporaryStream();
                 recordBtn.classList.remove('recording');
                 recordBtn.disabled = false;
@@ -306,10 +330,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     speechFeedbackText.textContent = `שגיאה (${event.error}). נסה שוב.`;
                 }
                 speechFeedbackText.className = 'incorrect shake';
-                console.error('Full speech recognition error object:', event);
             };
 
             recognition.onend = () => {
+                logToScreen('recognition.onend: Fired. Recognition has ended.');
                 stopTemporaryStream();
                 recordBtn.classList.remove('recording');
                 if (!recordBtn.classList.contains('hidden')) {
@@ -318,12 +342,13 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
+                logToScreen('startRecognitionWithStream: Calling recognition.start().');
                 recordBtn.classList.add('recording');
                 speechFeedbackText.textContent = 'מקליט...';
                 recognition.start();
             } catch (err) {
+                logToScreen(`startRecognitionWithStream: CRITICAL: Error on recognition.start(). Error: ${err.name} - ${err.message}`);
                 stopTemporaryStream();
-                console.error('Error starting speech recognition:', err);
                 speechFeedbackText.textContent = 'שגיאה בהפעלת המיקרופון. נסה לרענן.';
                 speechFeedbackText.className = 'incorrect shake';
                 recordBtn.classList.remove('recording');
@@ -331,20 +356,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        // On iPad, use the persistent stream. For other devices, get a temporary one on-demand.
         if (isIPad()) {
+            logToScreen('handleSpeechRecognition: iPad detected. Using persistent stream.');
             if (persistentStream) {
                 startRecognitionWithStream(persistentStream);
             } else {
+                logToScreen('handleSpeechRecognition: ERROR: iPad detected but persistentStream is null.');
                 speechFeedbackText.textContent = 'המיקרופון לא הופעל. יש לרענן ולאפשר גישה.';
                 speechFeedbackText.className = 'incorrect shake';
                 recordBtn.disabled = true;
             }
         } else {
+            logToScreen('handleSpeechRecognition: Not an iPad. Getting temporary stream.');
             navigator.mediaDevices.getUserMedia({ audio: true })
-                .then(startRecognitionWithStream)
+                .then(stream => {
+                    logToScreen('handleSpeechRecognition: Temporary stream acquired.');
+                    startRecognitionWithStream(stream);
+                })
                 .catch(err => {
-                    console.error('On-demand microphone activation error:', err);
+                    logToScreen(`handleSpeechRecognition: FAILED to get temporary stream. Error: ${err.name} - ${err.message}`);
                     speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון בהגדרות.';
                     speechFeedbackText.className = 'incorrect shake';
                     recordBtn.disabled = false;
@@ -499,9 +529,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Stop microphone if the user switches tabs or minimizes the app
     document.addEventListener('visibilitychange', () => {
+        logToScreen(`visibilitychange: document.hidden is now ${document.hidden}.`);
         if (document.hidden && recognition) {
+            logToScreen('visibilitychange: Document is hidden, aborting recognition.');
             recognition.abort();
-            console.log("Recognition aborted due to page visibility change.");
         }
     });
 
