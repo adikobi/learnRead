@@ -520,6 +520,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Utility Functions ---
 
+    /**
+     * Checks if the current device is an iPad.
+     * This is necessary because the Web Speech API is unreliable on iPadOS.
+     * It checks for "iPad" in the user agent, and also for "Macintosh" on a touch-enabled device,
+     * which is how modern iPads often identify themselves.
+     * @returns {boolean} True if the device is an iPad, false otherwise.
+     */
+    function isIPad() {
+        // Standard iPad user agent
+        if (/iPad/.test(navigator.userAgent)) {
+            return true;
+        }
+        // iPad on iPadOS 13+ identifying as a Mac
+        if (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints && navigator.maxTouchPoints > 1) {
+            return true;
+        }
+        return false;
+    }
+
     /* Fisher-Yates shuffle algorithm */
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -563,9 +582,15 @@ document.addEventListener('DOMContentLoaded', () => {
         modalTimeoutValue = recordingTimeoutSeconds;
         timeoutDisplay.textContent = modalTimeoutValue;
 
-        const savedMode = localStorage.getItem('isClassicMode');
-        if (savedMode !== null) {
-            isClassicMode = (savedMode === 'true');
+        // Automatically switch to classic mode on iPads, where Web Speech API is unreliable.
+        if (isIPad()) {
+            isClassicMode = true;
+            console.log("iPad detected. Forcing classic mode.");
+        } else {
+            const savedMode = localStorage.getItem('isClassicMode');
+            if (savedMode !== null) {
+                isClassicMode = (savedMode === 'true');
+            }
         }
     }
 
