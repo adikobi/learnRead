@@ -62,21 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
         useWorker: true,
     });
     const toggleModeBtn = document.getElementById('toggle-mode-btn');
-    const logContainer = document.getElementById('log-container');
-
-    /**
-     * Logs a message to the on-screen log container.
-     * @param {string} message The message to log.
-     */
-    function logToScreen(message) {
-        if (!logContainer) return;
-        const p = document.createElement('p');
-        const timestamp = new Date().toLocaleTimeString();
-        p.textContent = `[${timestamp}] ${message}`;
-        logContainer.appendChild(p);
-        // Auto-scroll to the latest log
-        logContainer.scrollTop = logContainer.scrollHeight;
-    }
 
     // Password Modal Elements
     const passwordModal = document.getElementById('password-modal');
@@ -99,21 +84,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let modalTimeoutValue = 6; // Temporary value for the modal stepper
     let recognitionTimeoutId = null; // To hold the timeout ID
     let isTimeout = false; // Flag to check if recognition was stopped by our timer
-    let persistentStream = null; // Will hold the persistent audio stream on iPad.
 
     // --- Speech Recognition Setup ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition;
 
     // Check if the browser supports the API
-    if (SpeechRecognition) {
-        recognition = new SpeechRecognition();
-        recognition.lang = 'he-IL'; // Set language to Hebrew
-        recognition.continuous = false; // Stop listening after the first utterance
-        recognition.interimResults = false; // Get final results only
-    } else {
+    if (!SpeechRecognition) {
         console.error("Speech Recognition not supported in this browser.");
-        // Hide the record button if not supported
         recordBtn.classList.add('hidden');
     }
 
@@ -121,30 +98,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Game Logic ---
 
     function startGame() {
-        logToScreen('startGame: Function called.');
         shuffleArray(gameData); // Randomize the order of words
         currentWordIndex = 0; // Reset index for the new game
         splashScreen.classList.remove('active');
         gameScreen.classList.add('active');
         loadNewWord();
-
-        // On iPad, get the microphone stream once and keep it alive for the session.
-        // This is the core of the fix to prevent timing-related errors.
-        if (!isClassicMode && isIPad()) {
-            logToScreen('startGame: iPad detected. Attempting to acquire persistent stream.');
-            navigator.mediaDevices.getUserMedia({ audio: true })
-                .then(stream => {
-                    logToScreen('startGame: Persistent stream acquired successfully.');
-                    persistentStream = stream;
-                })
-                .catch(err => {
-                    logToScreen(`startGame: FAILED to acquire persistent stream. Error: ${err.name} - ${err.message}`);
-                    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-                        speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון בהגדרות.';
-                        recordBtn.disabled = true;
-                    }
-                });
-        }
+        // No proactive permission request needed with the new just-in-time model.
     }
 
     function loadNewWord() {
@@ -259,127 +218,104 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleSpeechRecognition() {
-        logToScreen('handleSpeechRecognition: Function called.');
+        // UI cleanup and audio context check
         recordBtn.classList.remove('recording');
-        recordBtn.disabled = true;
+        recordBtn.disabled = true; // Disable button immediately to prevent double-clicks
         speechFeedbackText.textContent = '';
         speechFeedbackText.className = '';
         if (audioContext && audioContext.state === 'suspended') {
-            logToScreen('handleSpeechRecognition: Resuming suspended AudioContext.');
             audioContext.resume();
         }
 
-        const startRecognitionWithStream = (stream) => {
-            logToScreen('startRecognitionWithStream: Function called.');
-            const stopTemporaryStream = () => {
-                if (!isIPad() && stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                    logToScreen('stopTemporaryStream: Temporary stream stopped for non-iPad device.');
-                }
-            };
+        // Just-in-Time Activation: Get a fresh stream and create a fresh recognition object on every click.
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                // This function stops the temporary stream.
+                const stopMicrophoneStream = () => {
+                    if (stream) {
+                        stream.getTracks().forEach(track => track.stop());
+                    }
+                };
 
-            recognition = new SpeechRecognition();
-            recognition.lang = 'he-IL';
-            recognition.continuous = false;
-            recognition.interimResults = false;
+                // Create a new recognition object for this attempt.
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'he-IL';
+                recognition.continuous = false;
+                recognition.interimResults = false;
 
-            recognition.onstart = () => {
-                logToScreen('recognition.onstart: Event fired.');
-            };
+                recognition.onresult = (event) => {
+                    const spokenWord = event.results[0][0].transcript;
+                    const correctWordData = gameData[currentWordIndex].word;
+                    const normalizedSpokenWord = normalizeText(spokenWord);
+                    let isCorrect = Array.isArray(correctWordData)
+                        ? correctWordData.some(word => normalizeText(word) === normalizedSpokenWord)
+                        : normalizeText(correctWordData) === normalizedSpokenWord;
 
-            recognition.onresult = (event) => {
-                logToScreen(`recognition.onresult: Fired. Result: ${event.results[0][0].transcript}`);
-                const spokenWord = event.results[0][0].transcript;
-                const correctWordData = gameData[currentWordIndex].word;
-                const normalizedSpokenWord = normalizeText(spokenWord);
-                let isCorrect = Array.isArray(correctWordData)
-                    ? correctWordData.some(word => normalizeText(word) === normalizedSpokenWord)
-                    : normalizeText(correctWordData) === normalizedSpokenWord;
+                    speechFeedbackText.className = '';
+                    if (isCorrect) {
+                        speechFeedbackText.textContent = 'נהדר!';
+                        speechFeedbackText.classList.add('correct');
+                        shootConfetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                        recordBtn.disabled = true;
+                        recordBtn.classList.remove('recording');
+                        setTimeout(() => {
+                            recordBtn.classList.add('hidden');
+                            showOptions();
+                            speechFeedbackText.textContent = '';
+                            speechFeedbackText.className = '';
+                        }, 1500);
+                    } else {
+                        speechFeedbackText.textContent = `שמעתי "${spokenWord}". נסה שוב.`;
+                        speechFeedbackText.classList.add('incorrect', 'shake');
+                        recordBtn.classList.remove('recording');
+                        recordBtn.disabled = false;
+                    }
+                };
 
-                speechFeedbackText.className = '';
-                if (isCorrect) {
-                    speechFeedbackText.textContent = 'נהדר!';
-                    speechFeedbackText.classList.add('correct');
-                    shootConfetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                    recordBtn.disabled = true;
-                    recordBtn.classList.remove('recording');
-                    setTimeout(() => {
-                        recordBtn.classList.add('hidden');
-                        showOptions();
-                        speechFeedbackText.textContent = '';
-                        speechFeedbackText.className = '';
-                    }, 1500);
-                } else {
-                    speechFeedbackText.textContent = `שמעתי "${spokenWord}". נסה שוב.`;
-                    speechFeedbackText.classList.add('incorrect', 'shake');
+                recognition.onerror = (event) => {
+                    stopMicrophoneStream(); // Stop stream on error
                     recordBtn.classList.remove('recording');
                     recordBtn.disabled = false;
-                }
-            };
-
-            recognition.onerror = (event) => {
-                logToScreen(`recognition.onerror: Fired. Error: ${event.error}`);
-                stopTemporaryStream();
-                recordBtn.classList.remove('recording');
-                recordBtn.disabled = false;
-                if (event.error === 'no-speech') {
-                    speechFeedbackText.textContent = 'לא שמעתי כלום. נסה שוב.';
-                } else if (event.error === 'not-allowed') {
-                    speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון.';
-                } else {
-                    speechFeedbackText.textContent = `שגיאה (${event.error}). נסה שוב.`;
-                }
-                speechFeedbackText.className = 'incorrect shake';
-            };
-
-            recognition.onend = () => {
-                logToScreen('recognition.onend: Fired. Recognition has ended.');
-                stopTemporaryStream();
-                recordBtn.classList.remove('recording');
-                if (!recordBtn.classList.contains('hidden')) {
-                    recordBtn.disabled = false;
-                }
-            };
-
-            try {
-                logToScreen('startRecognitionWithStream: Calling recognition.start().');
-                recordBtn.classList.add('recording');
-                speechFeedbackText.textContent = 'מקליט...';
-                recognition.start();
-            } catch (err) {
-                logToScreen(`startRecognitionWithStream: CRITICAL: Error on recognition.start(). Error: ${err.name} - ${err.message}`);
-                stopTemporaryStream();
-                speechFeedbackText.textContent = 'שגיאה בהפעלת המיקרופון. נסה לרענן.';
-                speechFeedbackText.className = 'incorrect shake';
-                recordBtn.classList.remove('recording');
-                recordBtn.disabled = false;
-            }
-        };
-
-        if (isIPad()) {
-            logToScreen('handleSpeechRecognition: iPad detected. Using persistent stream.');
-            if (persistentStream) {
-                startRecognitionWithStream(persistentStream);
-            } else {
-                logToScreen('handleSpeechRecognition: ERROR: iPad detected but persistentStream is null.');
-                speechFeedbackText.textContent = 'המיקרופון לא הופעל. יש לרענן ולאפשר גישה.';
-                speechFeedbackText.className = 'incorrect shake';
-                recordBtn.disabled = true;
-            }
-        } else {
-            logToScreen('handleSpeechRecognition: Not an iPad. Getting temporary stream.');
-            navigator.mediaDevices.getUserMedia({ audio: true })
-                .then(stream => {
-                    logToScreen('handleSpeechRecognition: Temporary stream acquired.');
-                    startRecognitionWithStream(stream);
-                })
-                .catch(err => {
-                    logToScreen(`handleSpeechRecognition: FAILED to get temporary stream. Error: ${err.name} - ${err.message}`);
-                    speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון בהגדרות.';
+                    if (event.error === 'no-speech') {
+                        speechFeedbackText.textContent = 'לא שמעתי כלום. נסה שוב.';
+                    } else if (event.error === 'not-allowed') {
+                        speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון.';
+                    } else {
+                        speechFeedbackText.textContent = `שגיאה (${event.error}). נסה שוב.`;
+                    }
                     speechFeedbackText.className = 'incorrect shake';
+                    console.error('Full speech recognition error object:', event);
+                };
+
+                recognition.onend = () => {
+                    stopMicrophoneStream(); // Always stop stream when recognition ends
+                    recordBtn.classList.remove('recording');
+                    if (!recordBtn.classList.contains('hidden')) {
+                        recordBtn.disabled = false;
+                    }
+                };
+
+                // Start the recognition process
+                try {
+                    recordBtn.classList.add('recording');
+                    speechFeedbackText.textContent = 'מקליט...';
+                    recognition.start();
+                } catch (err) {
+                    stopMicrophoneStream(); // Stop stream on error
+                    console.error('Error starting speech recognition:', err);
+                    speechFeedbackText.textContent = 'שגיאה בהפעלת המיקרופון. נסה לרענן.';
+                    speechFeedbackText.className = 'incorrect shake';
+                    recordBtn.classList.remove('recording');
                     recordBtn.disabled = false;
-                });
-        }
+                }
+            })
+            .catch(err => {
+                // This catches errors from getUserMedia itself (e.g., permission previously denied)
+                console.error('On-demand microphone activation error:', err);
+                speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון בהגדרות.';
+                speechFeedbackText.className = 'incorrect shake';
+                recordBtn.disabled = false;
+            });
     }
 
     let audioContext;
@@ -529,25 +465,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Stop microphone if the user switches tabs or minimizes the app
     document.addEventListener('visibilitychange', () => {
-        logToScreen(`visibilitychange: document.hidden is now ${document.hidden}.`);
         if (document.hidden && recognition) {
-            logToScreen('visibilitychange: Document is hidden, aborting recognition.');
             recognition.abort();
+            console.log("Recognition aborted due to page visibility change.");
         }
     });
 
     // --- Utility Functions ---
-
-    /**
-     * Checks if the current device is an iPad. This is crucial for applying
-     * the persistent stream workaround needed for the Web Speech API on iPadOS.
-     * @returns {boolean} True if the device is an iPad, false otherwise.
-     */
-    function isIPad() {
-        // Modern iPads on iPadOS 13+ may identify as 'Macintosh'.
-        // The 'maxTouchPoints > 1' check is a common way to distinguish them from desktop Macs.
-        return /iPad|Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1;
-    }
 
     /* Fisher-Yates shuffle algorithm */
     function shuffleArray(array) {
@@ -599,12 +523,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     loadSettings();
-
-    // Add a cleanup event listener to stop the persistent stream when the page is closed.
-    window.addEventListener('beforeunload', () => {
-        if (persistentStream) {
-            persistentStream.getTracks().forEach(track => track.stop());
-            console.log('Persistent stream stopped on page unload.');
-        }
-    });
 });
