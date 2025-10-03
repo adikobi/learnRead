@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { word: 'שָׁעוֹן', emoji: '⏰' },
         // Expansion 3 (50 words)
         { word: 'שׁוּעָל', emoji: '🦊' }, { word: 'פַּנְדָּה', emoji: '🐼' }, { word: 'דֹּב', emoji: '🐻' },
-        { word: 'זֶבְּרָה', emoji: '🦓' }, { word: ['גִ\'ירָפָה', 'גירפה'], emoji: '🦒' }, { word: 'תַּנִּין', emoji: '🐊' },
+        { word: 'זֶבְּרָה', emoji: '🦓' }, { word: ['ג\׳ירפה', 'גירפה'], emoji: '🦒' }, { word: 'תַּנִּין', emoji: '🐊' },
         { word: 'צָב', emoji: '🐢' }, { word: ['לִוְיָתָן', 'לוויתן'], emoji: '🐳' }, { word: 'דּוֹלְפִין', 'emoji': '🐬' },
         { word: 'הַמְבּוּרְגֵּר', emoji: '🍔' }, { word: 'צִ\'יפְּס', emoji: '🍟' }, { word: ['סֻפְגָּנִיָּה', 'סופגניה'], emoji: '🍩' },
         { word: ['עוּגִיָּה', 'עוגייה'], emoji: '🍪' }, { word: 'שׁוֹקוֹלָד', emoji: '🍫' }, { word: ['סֻכָּרִיָּה', 'סוכריה', 'סכריה'], emoji: '🍭' },
