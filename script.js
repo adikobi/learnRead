@@ -87,10 +87,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Speech Recognition Setup ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition; // This will hold our single recognition instance
+    let recognition;
 
     // Check if the browser supports the API
-    if (!SpeechRecognition) {
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'he-IL'; // Set language to Hebrew
+        recognition.continuous = false; // Stop listening after the first utterance
+        recognition.interimResults = false; // Get final results only
+    } else {
         console.error("Speech Recognition not supported in this browser.");
         // Hide the record button if not supported
         recordBtn.classList.add('hidden');
@@ -106,7 +111,24 @@ document.addEventListener('DOMContentLoaded', () => {
         gameScreen.classList.add('active');
         loadNewWord();
 
-        // Proactive permission request removed. Will be handled on-demand when the record button is clicked.
+        // Proactively request microphone permission if in recording mode.
+        // This is the first step to ensure permissions are sorted before recording is attempted.
+        if (!isClassicMode) {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    console.log('Microphone permission granted proactively.');
+                    // Stop the stream immediately; we only wanted to trigger the permission prompt.
+                    stream.getTracks().forEach(track => track.stop());
+                })
+                .catch(err => {
+                    // This error is handled here and also in the on-demand request.
+                    console.error('Proactive permission request error:', err);
+                    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                        speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון בהגדרות הדפדפן.';
+                        recordBtn.disabled = true;
+                    }
+                });
+        }
     }
 
     function loadNewWord() {
@@ -223,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleSpeechRecognition() {
         // UI cleanup and audio context check
         recordBtn.classList.remove('recording');
-        recordBtn.disabled = false;
+        recordBtn.disabled = true; // Disable button immediately to prevent double-clicks
         speechFeedbackText.textContent = '';
         speechFeedbackText.className = '';
         if (audioContext && audioContext.state === 'suspended') {
@@ -231,20 +253,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // --- Key Fix for iPadOS: Activate microphone stream ON-DEMAND ---
+        // This second call activates the hardware, as permission was already granted at game start.
         navigator.mediaDevices.getUserMedia({ audio: true })
             .then(stream => {
-                // Now that the microphone is active, start speech recognition.
-                recognition = new SpeechRecognition();
-                recognition.lang = 'he-IL';
-                recognition.continuous = false;
-                recognition.interimResults = false;
-
                 // This function stops the microphone stream and cleans up the UI indicator.
                 const stopMicrophoneStream = () => {
                     if (stream) {
                         stream.getTracks().forEach(track => track.stop());
                     }
                 };
+
+                // Now that the microphone is active, start speech recognition.
+                recognition = new SpeechRecognition();
+                recognition.lang = 'he-IL';
+                recognition.continuous = false;
+                recognition.interimResults = false;
 
                 recognition.onresult = (event) => {
                     const spokenWord = event.results[0][0].transcript;
@@ -300,7 +323,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Start the recognition process
                 try {
-                    recordBtn.disabled = true;
                     recordBtn.classList.add('recording');
                     speechFeedbackText.textContent = 'מקליט...';
                     recognition.start();
@@ -314,9 +336,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             })
             .catch(err => {
-                // This catches errors from getUserMedia itself (e.g., permission denied)
-                console.error('Error getting microphone stream:', err);
-                speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון.';
+                // This catches errors from getUserMedia itself (e.g., permission previously denied)
+                console.error('On-demand microphone activation error:', err);
+                speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון בהגדרות.';
                 speechFeedbackText.className = 'incorrect shake';
                 recordBtn.disabled = false;
             });
