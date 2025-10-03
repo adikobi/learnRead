@@ -87,15 +87,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Speech Recognition Setup ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition;
+    let recognition; // This will hold our single recognition instance
 
     // Check if the browser supports the API
-    if (SpeechRecognition) {
-        recognition = new SpeechRecognition();
-        recognition.lang = 'he-IL'; // Set language to Hebrew
-        recognition.continuous = false; // Stop listening after the first utterance
-        recognition.interimResults = false; // Get final results only
-    } else {
+    if (!SpeechRecognition) {
         console.error("Speech Recognition not supported in this browser.");
         // Hide the record button if not supported
         recordBtn.classList.add('hidden');
@@ -252,41 +247,18 @@ document.addEventListener('DOMContentLoaded', () => {
             audioContext.resume();
         }
 
-        if (!recognition) {
-            speechFeedbackText.textContent = "דפדפן לא נתמך.";
-            return;
-        }
-        recordBtn.disabled = true;
-        recordBtn.classList.add('recording');
-        speechFeedbackText.textContent = 'מקליט...';
+        // --- Key Fix for iPadOS ---
+        // Create a new SpeechRecognition object on each click.
+        // This prevents errors from stale or invalid recognition objects on iOS/iPadOS.
+        recognition = new SpeechRecognition();
+        recognition.lang = 'he-IL';
+        recognition.continuous = false;
+        recognition.interimResults = false;
 
-        // Clear any existing timeout
-        if (recognitionTimeoutId) {
-            clearTimeout(recognitionTimeoutId);
-        }
-
-        isTimeout = false; // Reset the timeout flag
-        // Set a timeout to stop recognition
-        recognitionTimeoutId = setTimeout(() => {
-            isTimeout = true; // Set the flag before stopping
-            recognition.stop();
-        }, recordingTimeoutSeconds * 1000);
-
-        try {
-            recognition.start();
-        } catch (err) {
-            console.error('Error starting speech recognition:', err);
-            speechFeedbackText.textContent = 'שגיאה בהפעלת המיקרופון. נסה לרענן.';
-            speechFeedbackText.className = 'incorrect shake';
-            recordBtn.classList.remove('recording');
-            recordBtn.disabled = false;
-        }
-    }
-
-    if (recognition) {
+        // Attach event listeners to the new instance
         recognition.onresult = (event) => {
             clearTimeout(recognitionTimeoutId);
-            recognition.stop(); // Explicitly stop the recognition service
+            // recognition.stop(); // No need to stop, onresult implies it's stopping/stopped.
 
             const spokenWord = event.results[0][0].transcript;
             const correctWordData = gameData[currentWordIndex].word;
@@ -318,29 +290,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     speechFeedbackText.className = '';
                 }, 1500);
             } else {
-                // Word is incorrect, now check if it was due to a timeout.
-                if (isTimeout) {
+                 if (isTimeout) {
                     speechFeedbackText.textContent = `שמעתי "${spokenWord}", אבל הזמן עבר.`;
                 } else {
                     speechFeedbackText.textContent = `שמעתי "${spokenWord}". נסה שוב.`;
                 }
                 speechFeedbackText.classList.add('incorrect', 'shake');
-                // Manually reset button state for immediate feedback
                 recordBtn.classList.remove('recording');
                 recordBtn.disabled = false;
             }
-            isTimeout = false; // Reset flag after use
+            isTimeout = false;
         };
 
         recognition.onerror = (event) => {
             clearTimeout(recognitionTimeoutId);
-            recognition.stop(); // Ensure it's stopped.
 
-            // Manually reset button state for immediate feedback in all error cases
             recordBtn.classList.remove('recording');
             recordBtn.disabled = false;
 
-            // Determine the error message
             if (isTimeout && event.error === 'no-speech') {
                 speechFeedbackText.textContent = 'הזמן עבר, ולא שמעתי כלום. נסה שוב.';
             } else if (event.error === 'no-speech') {
@@ -352,17 +319,46 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             speechFeedbackText.className = 'incorrect shake';
-            isTimeout = false; // Reset flag
+            isTimeout = false;
             console.error('Full speech recognition error object:', event);
         };
 
         recognition.onend = () => {
+            clearTimeout(recognitionTimeoutId); // Clean up the timer
             recordBtn.classList.remove('recording');
-            // Re-enable only if it's not hidden (i.e. recognition was successful)
             if (!recordBtn.classList.contains('hidden')) {
                 recordBtn.disabled = false;
             }
         };
+
+
+        recordBtn.disabled = true;
+        recordBtn.classList.add('recording');
+        speechFeedbackText.textContent = 'מקליט...';
+
+        // Clear any existing timeout
+        if (recognitionTimeoutId) {
+            clearTimeout(recognitionTimeoutId);
+        }
+
+        isTimeout = false; // Reset the timeout flag
+        // Set a timeout to stop recognition
+        recognitionTimeoutId = setTimeout(() => {
+            isTimeout = true; // Set the flag before stopping
+            if (recognition) {
+                 recognition.stop();
+            }
+        }, recordingTimeoutSeconds * 1000);
+
+        try {
+            recognition.start();
+        } catch (err) {
+            console.error('Error starting speech recognition:', err);
+            speechFeedbackText.textContent = 'שגיאה בהפעלת המיקרופון. נסה לרענן.';
+            speechFeedbackText.className = 'incorrect shake';
+            recordBtn.classList.remove('recording');
+            recordBtn.disabled = false;
+        }
     }
 
     let audioContext;
@@ -520,25 +516,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Utility Functions ---
 
-    /**
-     * Checks if the current device is an iPad.
-     * This is necessary because the Web Speech API is unreliable on iPadOS.
-     * It checks for "iPad" in the user agent, and also for "Macintosh" on a touch-enabled device,
-     * which is how modern iPads often identify themselves.
-     * @returns {boolean} True if the device is an iPad, false otherwise.
-     */
-    function isIPad() {
-        // Standard iPad user agent
-        if (/iPad/.test(navigator.userAgent)) {
-            return true;
-        }
-        // iPad on iPadOS 13+ identifying as a Mac
-        if (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints && navigator.maxTouchPoints > 1) {
-            return true;
-        }
-        return false;
-    }
-
     /* Fisher-Yates shuffle algorithm */
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -582,15 +559,9 @@ document.addEventListener('DOMContentLoaded', () => {
         modalTimeoutValue = recordingTimeoutSeconds;
         timeoutDisplay.textContent = modalTimeoutValue;
 
-        // Automatically switch to classic mode on iPads, where Web Speech API is unreliable.
-        if (isIPad()) {
-            isClassicMode = true;
-            console.log("iPad detected. Forcing classic mode.");
-        } else {
-            const savedMode = localStorage.getItem('isClassicMode');
-            if (savedMode !== null) {
-                isClassicMode = (savedMode === 'true');
-            }
+        const savedMode = localStorage.getItem('isClassicMode');
+        if (savedMode !== null) {
+            isClassicMode = (savedMode === 'true');
         }
     }
 
