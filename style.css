@@ -343,3 +343,109 @@ body {
     height: 20px;
     font-weight: 700;
 }
+
+/* New Setting Row in Modal */
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.setting-row label {
+    font-size: 1rem;
+    color: #555;
+}
+
+#timeout-input {
+    width: 60px;
+    padding: 5px;
+    font-size: 1rem;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    direction: ltr;
+}
+
+.modal-content hr {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 20px 0;
+}
+
+#settings-actions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Increased gap for better separation */
+    margin-top: 10px;
+}
+
+#settings-actions-container .setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stepper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.stepper-btn {
+    font-family: 'Heebo', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1e90ff;
+    background-color: #e9f5ff;
+    border: 1px solid #1e90ff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 0; /* Remove line-height influence */
+    padding: 0; /* Remove padding for precise control */
+    transition: background-color 0.2s;
+}
+
+.stepper-btn:hover {
+    background-color: #d4eaff;
+}
+
+#timeout-display {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #333;
+    min-width: 30px;
+    text-align: center;
+}
+
+.settings-btn {
+    font-family: 'Heebo', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+#save-timeout-btn {
+    background-color: #1e90ff; /* Dodger Blue */
+}
+#save-timeout-btn:hover {
+    background-color: #1c86ee;
+}
+
+#change-mode-btn {
+    background-color: #6c757d; /* Grey for secondary action */
+    border: 2px solid #6c757d;
+}
+#change-mode-btn:hover {
+    background-color: #5a6268;
+}

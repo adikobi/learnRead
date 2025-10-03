@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { word: 'שָׁעוֹן', emoji: '⏰' },
         // Expansion 3 (50 words)
         { word: 'שׁוּעָל', emoji: '🦊' }, { word: 'פַּנְדָּה', emoji: '🐼' }, { word: 'דֹּב', emoji: '🐻' },
-        { word: 'זֶבְּרָה', emoji: '🦓' }, { word: 'גִ\'ירָפָה', emoji: '🦒' }, { word: 'תַּנִּין', emoji: '🐊' },
+        { word: 'זֶבְּרָה', emoji: '🦓' }, { word: ['גִ\'ירָפָה', 'גירפה'], emoji: '🦒' }, { word: 'תַּנִּין', emoji: '🐊' },
         { word: 'צָב', emoji: '🐢' }, { word: ['לִוְיָתָן', 'לוויתן'], emoji: '🐳' }, { word: 'דּוֹלְפִין', 'emoji': '🐬' },
         { word: 'הַמְבּוּרְגֵּר', emoji: '🍔' }, { word: 'צִ\'יפְּס', emoji: '🍟' }, { word: ['סֻפְגָּנִיָּה', 'סופגניה'], emoji: '🍩' },
         { word: ['עוּגִיָּה', 'עוגייה'], emoji: '🍪' }, { word: 'שׁוֹקוֹלָד', emoji: '🍫' }, { word: ['סֻכָּרִיָּה', 'סוכריה', 'סכריה'], emoji: '🍭' },
@@ -34,11 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
         { word: 'כְּפָפָה', emoji: '🧤' }, { word: 'צָעִיף', emoji: '🧣' }, { word: ['מִשְׁקָפַיִם', 'משקפיים', 'משקפים'], emoji: '👓' },
         { word: 'כֶּתֶר', emoji: '👑' }, { word: 'קֶשֶׁת', emoji: '🌈' }, { word: 'הַר גַּעַשׁ', emoji: '🌋' },
         { word: 'גַּל', emoji: '🌊' }, { word: 'יָרֵחַ', emoji: '🌙' }, { word: 'שֶׁלֶג', emoji: '❄️' },
-        { word: 'אֵשׁ', emoji: '🔥' }, { word: 'טִפָּה', emoji: '💧' }, { word: 'רוּחַ', emoji: '💨' },
+        { word: 'אֵשׁ', emoji: '🔥' }, { word: ['טִפָּה', 'טיפה'], emoji: '💧' }, { word: 'רוּחַ', emoji: '💨' },
         { word: 'בָּרָק', emoji: '⚡' }, { word: 'סוּפָה', emoji: '🌪️' }, { word: 'גִּיטָרָה', emoji: '🎸' },
         { word: 'פְּסַנְתֵּר', emoji: '🎹' }, { word: 'חֲצוֹצְרָה', emoji: '🎺' }, { word: 'כִּנּוֹר', emoji: '🎻' },
-        { word: 'תֹּף', emoji: '🥁' }, { word: 'טֶלֶפוֹן', emoji: '📱' }, { word: 'מַחְשֵׁב', emoji: '💻' },
-        { word: ['טֶלֶוִיזְיָה', 'טלוויזיה', 'טלויזיה'], emoji: '📺' }, { word: 'נוּרָה', emoji: '💡' }, { word: 'יַהֲלוֹם', emoji: '💎' },
+        { word: ['תֹּף', 'תוף', 'טוב'], emoji: '🥁' }, { word: 'טֶלֶפוֹן', emoji: '📱' }, { word: 'מַחְשֵׁב', emoji: '💻' },
+        { word: ['טֶלֶוִיזְיָה', 'טלוויזיה', 'טלויזיה'], emoji: '📺' }, { word: ['נוּרָה', 'נורא'], emoji: '💡' }, { word: 'יַהֲלוֹם', emoji: '💎' },
         { word: 'רוֹבּוֹט', emoji: '🤖' }
     ];
 
@@ -68,10 +68,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeBtn = passwordModal.querySelector('.close-btn');
     const passwordInputs = [...passwordModal.querySelectorAll('.password-digit')];
     const passwordFeedback = document.getElementById('password-feedback');
+    const passwordPromptContainer = document.getElementById('password-prompt-container');
+    const settingsActionsContainer = document.getElementById('settings-actions-container');
+    const saveTimeoutBtn = document.getElementById('save-timeout-btn');
+    const changeModeBtn = document.getElementById('change-mode-btn');
+    const stepperMinus = document.getElementById('stepper-minus');
+    const stepperPlus = document.getElementById('stepper-plus');
+    const timeoutDisplay = document.getElementById('timeout-display');
+
 
     let currentWordIndex = 0;
     let isChecking = false; // Prevents multiple clicks while checking answer
     let isClassicMode = false; // false = recording mode, true = classic mode (no recording)
+    let recordingTimeoutSeconds = 6; // Default timeout
+    let modalTimeoutValue = 6; // Temporary value for the modal stepper
+    let recognitionTimeoutId = null; // To hold the timeout ID
+    let isTimeout = false; // Flag to check if recognition was stopped by our timer
 
     // --- Speech Recognition Setup ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -98,6 +110,23 @@ document.addEventListener('DOMContentLoaded', () => {
         splashScreen.classList.remove('active');
         gameScreen.classList.add('active');
         loadNewWord();
+
+        // Proactively request microphone permission if in recording mode
+        if (!isClassicMode) {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    console.log('Microphone permission granted.');
+                    // Stop the stream immediately, we only wanted the permission
+                    stream.getTracks().forEach(track => track.stop());
+                })
+                .catch(err => {
+                    console.error('Error requesting microphone permission:', err);
+                    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                        speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון בהגדרות הדפדפן.';
+                        recordBtn.disabled = true;
+                    }
+                });
+        }
     }
 
     function loadNewWord() {
@@ -212,6 +241,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleSpeechRecognition() {
+        // Force reset UI state before starting a new recognition
+        recordBtn.classList.remove('recording');
+        recordBtn.disabled = false;
+        speechFeedbackText.textContent = '';
+        speechFeedbackText.className = '';
+
+        // Advanced fix for iOS/iPadOS: Resume AudioContext if it's suspended
+        if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+
         if (!recognition) {
             speechFeedbackText.textContent = "דפדפן לא נתמך.";
             return;
@@ -219,26 +259,46 @@ document.addEventListener('DOMContentLoaded', () => {
         recordBtn.disabled = true;
         recordBtn.classList.add('recording');
         speechFeedbackText.textContent = 'מקליט...';
-        recognition.start();
+
+        // Clear any existing timeout
+        if (recognitionTimeoutId) {
+            clearTimeout(recognitionTimeoutId);
+        }
+
+        isTimeout = false; // Reset the timeout flag
+        // Set a timeout to stop recognition
+        recognitionTimeoutId = setTimeout(() => {
+            isTimeout = true; // Set the flag before stopping
+            recognition.stop();
+        }, recordingTimeoutSeconds * 1000);
+
+        try {
+            recognition.start();
+        } catch (err) {
+            console.error('Error starting speech recognition:', err);
+            speechFeedbackText.textContent = 'שגיאה בהפעלת המיקרופון. נסה לרענן.';
+            speechFeedbackText.className = 'incorrect shake';
+            recordBtn.classList.remove('recording');
+            recordBtn.disabled = false;
+        }
     }
 
     if (recognition) {
         recognition.onresult = (event) => {
+            clearTimeout(recognitionTimeoutId);
             recognition.stop(); // Explicitly stop the recognition service
+
             const spokenWord = event.results[0][0].transcript;
             const correctWordData = gameData[currentWordIndex].word;
             const normalizedSpokenWord = normalizeText(spokenWord);
 
             let isCorrect = false;
             if (Array.isArray(correctWordData)) {
-                // If it's an array of possible words, check if the spoken word matches any of them.
                 isCorrect = correctWordData.some(word => normalizeText(word) === normalizedSpokenWord);
             } else {
-                // Otherwise, it's a single string; compare directly.
                 isCorrect = normalizeText(correctWordData) === normalizedSpokenWord;
             }
 
-            // Clear previous animations
             speechFeedbackText.className = '';
 
             if (isCorrect) {
@@ -249,34 +309,51 @@ document.addEventListener('DOMContentLoaded', () => {
                     spread: 70,
                     origin: { y: 0.6 }
                 });
-
-                recordBtn.disabled = true; // Prevent clicking again during timeout
+                recordBtn.disabled = true;
+                recordBtn.classList.remove('recording'); // Ensure UI updates immediately
                 setTimeout(() => {
                     recordBtn.classList.add('hidden');
                     showOptions();
                     speechFeedbackText.textContent = '';
                     speechFeedbackText.className = '';
-                }, 1500); // Increased timeout for confetti
+                }, 1500);
             } else {
-                speechFeedbackText.textContent = `שמעתי "${spokenWord}". נסה שוב.`;
+                // Word is incorrect, now check if it was due to a timeout.
+                if (isTimeout) {
+                    speechFeedbackText.textContent = `שמעתי "${spokenWord}", אבל הזמן עבר.`;
+                } else {
+                    speechFeedbackText.textContent = `שמעתי "${spokenWord}". נסה שוב.`;
+                }
                 speechFeedbackText.classList.add('incorrect', 'shake');
+                // Manually reset button state for immediate feedback
+                recordBtn.classList.remove('recording');
+                recordBtn.disabled = false;
             }
+            isTimeout = false; // Reset flag after use
         };
 
         recognition.onerror = (event) => {
-            recognition.stop(); // Explicitly stop the recognition service
-            console.error('Speech recognition error:', event.error);
-            // Clear previous animations
-            speechFeedbackText.className = '';
-            speechFeedbackText.classList.add('incorrect', 'shake');
+            clearTimeout(recognitionTimeoutId);
+            recognition.stop(); // Ensure it's stopped.
 
-            if (event.error === 'no-speech') {
+            // Manually reset button state for immediate feedback in all error cases
+            recordBtn.classList.remove('recording');
+            recordBtn.disabled = false;
+
+            // Determine the error message
+            if (isTimeout && event.error === 'no-speech') {
+                speechFeedbackText.textContent = 'הזמן עבר, ולא שמעתי כלום. נסה שוב.';
+            } else if (event.error === 'no-speech') {
                 speechFeedbackText.textContent = 'לא שמעתי כלום. נסה שוב.';
             } else if (event.error === 'not-allowed') {
                 speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון.';
             } else {
                 speechFeedbackText.textContent = 'אופס, קרתה שגיאה. נסה שוב.';
             }
+
+            speechFeedbackText.className = 'incorrect shake';
+            isTimeout = false; // Reset flag
+            console.error('Full speech recognition error object:', event);
         };
 
         recognition.onend = () => {
@@ -288,16 +365,45 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    let audioContext;
+    let isAudioInitialized = false;
+
+    // Function to initialize audio context on user gesture, crucial for iOS/iPadOS
+    function initializeAudio() {
+        if (isAudioInitialized) return;
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            isAudioInitialized = true;
+            console.log("AudioContext initialized successfully.");
+        } catch (e) {
+            console.error("Could not initialize AudioContext:", e);
+        }
+    }
+
     // --- Event Listeners ---
 
-    startGameBtn.addEventListener('click', startGame);
+    startGameBtn.addEventListener('click', () => {
+        initializeAudio();
+        startGame();
+    });
     recordBtn.addEventListener('click', handleSpeechRecognition);
 
     // --- Password Modal Logic ---
     function openPasswordModal() {
         passwordModal.classList.remove('hidden');
+        // Reset to password prompt state
+        passwordPromptContainer.classList.remove('hidden');
+        settingsActionsContainer.classList.add('hidden');
         passwordFeedback.textContent = '';
         passwordInputs.forEach(input => input.value = '');
+
+        // Set the temporary modal value to the currently active timeout
+        modalTimeoutValue = recordingTimeoutSeconds;
+        timeoutDisplay.textContent = modalTimeoutValue;
+
         passwordInputs[0].focus();
     }
 
@@ -337,13 +443,11 @@ document.addEventListener('DOMContentLoaded', () => {
             passwordFeedback.textContent = 'סיסמה נכונה!';
             passwordFeedback.className = 'correct feedback';
 
+            // Show action buttons and hide password prompt
             setTimeout(() => {
-                closePasswordModal();
-                isClassicMode = !isClassicMode;
-                const newMode = isClassicMode ? "קלאסי (ללא הקלטה)" : "הקלטה";
-                alert(`מצב המשחק שונה ל: ${newMode}`);
-                loadNewWord();
-            }, 500);
+                passwordPromptContainer.classList.add('hidden');
+                settingsActionsContainer.classList.remove('hidden');
+            }, 300);
 
         } else {
             passwordFeedback.textContent = 'סיסמה שגויה. נסה שוב.';
@@ -359,12 +463,45 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function saveTimeout() {
+        recordingTimeoutSeconds = modalTimeoutValue;
+        localStorage.setItem('recordingTimeout', recordingTimeoutSeconds);
+        closePasswordModal(); // Close modal immediately after saving
+    }
+
+    function changeMode() {
+        isClassicMode = !isClassicMode;
+        localStorage.setItem('isClassicMode', isClassicMode); // Save the mode
+        const newMode = isClassicMode ? "קלאסי (ללא הקלטה)" : "הקלטה";
+        alert(`מצב המשחק שונה ל: ${newMode}`);
+        closePasswordModal();
+        loadNewWord();
+    }
+
+
     toggleModeBtn.addEventListener('click', openPasswordModal);
     closeBtn.addEventListener('click', closePasswordModal);
     passwordInputs.forEach(input => {
         input.addEventListener('input', handlePasswordInput);
         input.addEventListener('keydown', handlePasswordKeydown);
     });
+    saveTimeoutBtn.addEventListener('click', saveTimeout);
+    changeModeBtn.addEventListener('click', changeMode);
+
+    stepperMinus.addEventListener('click', () => {
+        if (modalTimeoutValue > 1) {
+            modalTimeoutValue--;
+            timeoutDisplay.textContent = modalTimeoutValue;
+        }
+    });
+
+    stepperPlus.addEventListener('click', () => {
+        if (modalTimeoutValue < 15) {
+            modalTimeoutValue++;
+            timeoutDisplay.textContent = modalTimeoutValue;
+        }
+    });
+
 
     optionElements.forEach(el => {
         el.addEventListener('click', (e) => {
@@ -418,4 +555,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Initial setup
+    function loadSettings() {
+        const savedTimeout = localStorage.getItem('recordingTimeout');
+        if (savedTimeout) {
+            recordingTimeoutSeconds = parseInt(savedTimeout, 10);
+        }
+        modalTimeoutValue = recordingTimeoutSeconds;
+        timeoutDisplay.textContent = modalTimeoutValue;
+
+        const savedMode = localStorage.getItem('isClassicMode');
+        if (savedMode !== null) {
+            isClassicMode = (savedMode === 'true');
+        }
+    }
+
+    loadSettings();
 });

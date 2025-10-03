@@ -44,15 +44,30 @@
     <div id="password-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <button class="close-btn">&times;</button>
-            <h2>הזן סיסמה</h2>
-            <p>יש להזין 4 ספרות כדי לשנות מצב</p>
-            <div id="password-input-container">
-                <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
-                <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
-                <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
-                <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+            <h2>הגדרות</h2>
+            <div id="password-prompt-container">
+                <hr>
+                <p>כדי לגשת להגדרות, יש להזין סיסמה:</p>
+                <div id="password-input-container">
+                    <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                    <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                    <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                    <input type="number" class="password-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                </div>
+                <p id="password-feedback" class="feedback"></p>
             </div>
-            <p id="password-feedback" class="feedback"></p>
+            <div id="settings-actions-container" class="hidden">
+                <div class="setting-row">
+                    <label>שניות להקלטה:</label>
+                    <div class="stepper">
+                        <button id="stepper-minus" class="stepper-btn" aria-label="הפחת שנייה">-</button>
+                        <span id="timeout-display">6</span>
+                        <button id="stepper-plus" class="stepper-btn" aria-label="הוסף שנייה">+</button>
+                    </div>
+                </div>
+                 <button id="save-timeout-btn" class="settings-btn">שמור טיימאווט</button>
+                 <button id="change-mode-btn" class="settings-btn">שנה מצב משחק</button>
+            </div>
         </div>
     </div>
 
