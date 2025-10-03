@@ -315,7 +315,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (event.error === 'not-allowed') {
                 speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון.';
             } else {
-                speechFeedbackText.textContent = 'אופס, קרתה שגיאה. נסה שוב.';
+                // Diagnostic code to display the specific browser error
+                speechFeedbackText.textContent = `שגיאה (${event.error}). נסה שוב.`;
             }
 
             speechFeedbackText.className = 'incorrect shake';
