@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { word: 'שָׁעוֹן', emoji: '⏰' },
         // Expansion 3 (50 words)
         { word: 'שׁוּעָל', emoji: '🦊' }, { word: 'פַּנְדָּה', emoji: '🐼' }, { word: 'דֹּב', emoji: '🐻' },
-        { word: 'זֶבְּרָה', emoji: '🦓' }, { word: 'גִ\'ירָפָה', emoji: '🦒' }, { word: 'תַּנִּין', emoji: '🐊' },
+        { word: 'זֶבְּרָה', emoji: '🦓' }, { word: ['גִ\'ירָפָה', 'גירפה'], emoji: '🦒' }, { word: 'תַּנִּין', emoji: '🐊' },
         { word: 'צָב', emoji: '🐢' }, { word: ['לִוְיָתָן', 'לוויתן'], emoji: '🐳' }, { word: 'דּוֹלְפִין', 'emoji': '🐬' },
         { word: 'הַמְבּוּרְגֵּר', emoji: '🍔' }, { word: 'צִ\'יפְּס', emoji: '🍟' }, { word: ['סֻפְגָּנִיָּה', 'סופגניה'], emoji: '🍩' },
         { word: ['עוּגִיָּה', 'עוגייה'], emoji: '🍪' }, { word: 'שׁוֹקוֹלָד', emoji: '🍫' }, { word: ['סֻכָּרִיָּה', 'סוכריה', 'סכריה'], emoji: '🍭' },
@@ -34,10 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
         { word: 'כְּפָפָה', emoji: '🧤' }, { word: 'צָעִיף', emoji: '🧣' }, { word: ['מִשְׁקָפַיִם', 'משקפיים', 'משקפים'], emoji: '👓' },
         { word: 'כֶּתֶר', emoji: '👑' }, { word: 'קֶשֶׁת', emoji: '🌈' }, { word: 'הַר גַּעַשׁ', emoji: '🌋' },
         { word: 'גַּל', emoji: '🌊' }, { word: 'יָרֵחַ', emoji: '🌙' }, { word: 'שֶׁלֶג', emoji: '❄️' },
-        { word: 'אֵשׁ', emoji: '🔥' }, { word: 'טִפָּה', emoji: '💧' }, { word: 'רוּחַ', emoji: '💨' },
+        { word: 'אֵשׁ', emoji: '🔥' }, { word: ['טִפָּה', 'טיפה'], emoji: '💧' }, { word: 'רוּחַ', emoji: '💨' },
         { word: 'בָּרָק', emoji: '⚡' }, { word: 'סוּפָה', emoji: '🌪️' }, { word: 'גִּיטָרָה', emoji: '🎸' },
         { word: 'פְּסַנְתֵּר', emoji: '🎹' }, { word: 'חֲצוֹצְרָה', emoji: '🎺' }, { word: 'כִּנּוֹר', emoji: '🎻' },
-        { word: 'תֹּף', emoji: '🥁' }, { word: 'טֶלֶפוֹן', emoji: '📱' }, { word: 'מַחְשֵׁב', emoji: '💻' },
+        { word: ['תֹּף', 'תוף'], emoji: '🥁' }, { word: 'טֶלֶפוֹן', emoji: '📱' }, { word: 'מַחְשֵׁב', emoji: '💻' },
         { word: ['טֶלֶוִיזְיָה', 'טלוויזיה', 'טלויזיה'], emoji: '📺' }, { word: 'נוּרָה', emoji: '💡' }, { word: 'יַהֲלוֹם', emoji: '💎' },
         { word: 'רוֹבּוֹט', emoji: '🤖' }
     ];
@@ -449,11 +449,20 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveTimeout() {
         recordingTimeoutSeconds = modalTimeoutValue;
         localStorage.setItem('recordingTimeout', recordingTimeoutSeconds);
-        closePasswordModal(); // Close modal after saving
+
+        // Provide visual feedback without an alert
+        const originalText = saveTimeoutBtn.textContent;
+        saveTimeoutBtn.textContent = 'נשמר!';
+        saveTimeoutBtn.disabled = true;
+        setTimeout(() => {
+            saveTimeoutBtn.textContent = originalText;
+            saveTimeoutBtn.disabled = false;
+        }, 1500);
     }
 
     function changeMode() {
         isClassicMode = !isClassicMode;
+        localStorage.setItem('isClassicMode', isClassicMode); // Save the mode
         const newMode = isClassicMode ? "קלאסי (ללא הקלטה)" : "הקלטה";
         alert(`מצב המשחק שונה ל: ${newMode}`);
         closePasswordModal();
@@ -544,6 +553,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         modalTimeoutValue = recordingTimeoutSeconds;
         timeoutDisplay.textContent = modalTimeoutValue;
+
+        const savedMode = localStorage.getItem('isClassicMode');
+        if (savedMode !== null) {
+            isClassicMode = (savedMode === 'true');
+        }
     }
 
     loadSettings();
