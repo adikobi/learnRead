@@ -406,8 +406,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    line-height: 1;
-    padding-bottom: 4px; /* Align content vertically */
+    line-height: 0; /* Remove line-height influence */
+    padding: 0; /* Remove padding for precise control */
     transition: background-color 0.2s;
 }
 

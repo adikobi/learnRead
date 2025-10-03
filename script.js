@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { word: 'בָּרָק', emoji: '⚡' }, { word: 'סוּפָה', emoji: '🌪️' }, { word: 'גִּיטָרָה', emoji: '🎸' },
         { word: 'פְּסַנְתֵּר', emoji: '🎹' }, { word: 'חֲצוֹצְרָה', emoji: '🎺' }, { word: 'כִּנּוֹר', emoji: '🎻' },
         { word: ['תֹּף', 'תוף'], emoji: '🥁' }, { word: 'טֶלֶפוֹן', emoji: '📱' }, { word: 'מַחְשֵׁב', emoji: '💻' },
-        { word: ['טֶלֶוִיזְיָה', 'טלוויזיה', 'טלויזיה'], emoji: '📺' }, { word: 'נוּרָה', emoji: '💡' }, { word: 'יַהֲלוֹם', emoji: '💎' },
+        { word: ['טֶלֶוִיזְיָה', 'טלוויזיה', 'טלויזיה'], emoji: '📺' }, { word: ['נוּרָה', 'נורא'], emoji: '💡' }, { word: 'יַהֲלוֹם', emoji: '💎' },
         { word: 'רוֹבּוֹט', emoji: '🤖' }
     ];
 
@@ -110,6 +110,23 @@ document.addEventListener('DOMContentLoaded', () => {
         splashScreen.classList.remove('active');
         gameScreen.classList.add('active');
         loadNewWord();
+
+        // Proactively request microphone permission if in recording mode
+        if (!isClassicMode) {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    console.log('Microphone permission granted.');
+                    // Stop the stream immediately, we only wanted the permission
+                    stream.getTracks().forEach(track => track.stop());
+                })
+                .catch(err => {
+                    console.error('Error requesting microphone permission:', err);
+                    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                        speechFeedbackText.textContent = 'יש לאפשר גישה למיקרופון בהגדרות הדפדפן.';
+                        recordBtn.disabled = true;
+                    }
+                });
+        }
     }
 
     function loadNewWord() {
