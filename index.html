@@ -58,10 +58,14 @@
             </div>
             <div id="settings-actions-container" class="hidden">
                 <div class="setting-row">
-                    <label for="timeout-input">שניות להקלטה (1-15):</label>
-                    <input type="number" id="timeout-input" min="1" max="15" value="6">
+                    <label>שניות להקלטה:</label>
+                    <div class="stepper">
+                        <button id="stepper-minus" class="stepper-btn" aria-label="הפחת שנייה">-</button>
+                        <span id="timeout-display">6</span>
+                        <button id="stepper-plus" class="stepper-btn" aria-label="הוסף שנייה">+</button>
+                    </div>
                 </div>
-                 <button id="save-timeout-btn" class="settings-btn">שמור טיימאווט</button>
+                 <button id="save-timeout-btn" class="settings-btn">שמור הגדרות</button>
                  <button id="change-mode-btn" class="settings-btn">שנה מצב משחק</button>
             </div>
         </div>

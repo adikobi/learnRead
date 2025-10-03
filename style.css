@@ -384,9 +384,43 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #f9f9f9;
-    padding: 15px;
-    border-radius: 10px;
+}
+
+.stepper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.stepper-btn {
+    font-family: 'Heebo', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1e90ff;
+    background-color: #e9f5ff;
+    border: 1px solid #1e90ff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1;
+    padding-bottom: 4px; /* Align content vertically */
+    transition: background-color 0.2s;
+}
+
+.stepper-btn:hover {
+    background-color: #d4eaff;
+}
+
+#timeout-display {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #333;
+    min-width: 30px;
+    text-align: center;
 }
 
 .settings-btn {
@@ -403,7 +437,6 @@ body {
 
 #save-timeout-btn {
     background-color: #1e90ff; /* Dodger Blue */
-    margin-left: 10px; /* Space between input and button */
 }
 #save-timeout-btn:hover {
     background-color: #1c86ee;

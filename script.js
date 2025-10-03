@@ -68,17 +68,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeBtn = passwordModal.querySelector('.close-btn');
     const passwordInputs = [...passwordModal.querySelectorAll('.password-digit')];
     const passwordFeedback = document.getElementById('password-feedback');
-    const timeoutInput = document.getElementById('timeout-input');
     const passwordPromptContainer = document.getElementById('password-prompt-container');
     const settingsActionsContainer = document.getElementById('settings-actions-container');
     const saveTimeoutBtn = document.getElementById('save-timeout-btn');
     const changeModeBtn = document.getElementById('change-mode-btn');
+    const stepperMinus = document.getElementById('stepper-minus');
+    const stepperPlus = document.getElementById('stepper-plus');
+    const timeoutDisplay = document.getElementById('timeout-display');
 
 
     let currentWordIndex = 0;
     let isChecking = false; // Prevents multiple clicks while checking answer
     let isClassicMode = false; // false = recording mode, true = classic mode (no recording)
     let recordingTimeoutSeconds = 6; // Default timeout
+    let modalTimeoutValue = 6; // Temporary value for the modal stepper
     let recognitionTimeoutId = null; // To hold the timeout ID
     let isTimeout = false; // Flag to check if recognition was stopped by our timer
 
@@ -379,7 +382,11 @@ document.addEventListener('DOMContentLoaded', () => {
         settingsActionsContainer.classList.add('hidden');
         passwordFeedback.textContent = '';
         passwordInputs.forEach(input => input.value = '');
-        timeoutInput.value = recordingTimeoutSeconds; // Reset input to the currently active value
+
+        // Set the temporary modal value to the currently active timeout
+        modalTimeoutValue = recordingTimeoutSeconds;
+        timeoutDisplay.textContent = modalTimeoutValue;
+
         passwordInputs[0].focus();
     }
 
@@ -440,16 +447,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function saveTimeout() {
-        const newTimeout = parseInt(timeoutInput.value, 10);
-        if (!isNaN(newTimeout) && newTimeout >= 1 && newTimeout <= 15) {
-            recordingTimeoutSeconds = newTimeout;
-            localStorage.setItem('recordingTimeout', recordingTimeoutSeconds);
-            alert(`הטיימאווט נשמר: ${newTimeout} שניות.`);
-            closePasswordModal(); // Close modal after saving
-        } else {
-            alert('ערך טיימאווט לא חוקי. יש להזין מספר בין 1 ל-15.');
-            timeoutInput.value = recordingTimeoutSeconds; // Reset to valid value
-        }
+        recordingTimeoutSeconds = modalTimeoutValue;
+        localStorage.setItem('recordingTimeout', recordingTimeoutSeconds);
+        closePasswordModal(); // Close modal after saving
     }
 
     function changeMode() {
@@ -469,6 +469,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     saveTimeoutBtn.addEventListener('click', saveTimeout);
     changeModeBtn.addEventListener('click', changeMode);
+
+    stepperMinus.addEventListener('click', () => {
+        if (modalTimeoutValue > 1) {
+            modalTimeoutValue--;
+            timeoutDisplay.textContent = modalTimeoutValue;
+        }
+    });
+
+    stepperPlus.addEventListener('click', () => {
+        if (modalTimeoutValue < 15) {
+            modalTimeoutValue++;
+            timeoutDisplay.textContent = modalTimeoutValue;
+        }
+    });
 
 
     optionElements.forEach(el => {
@@ -527,8 +541,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const savedTimeout = localStorage.getItem('recordingTimeout');
         if (savedTimeout) {
             recordingTimeoutSeconds = parseInt(savedTimeout, 10);
-            timeoutInput.value = recordingTimeoutSeconds;
         }
+        modalTimeoutValue = recordingTimeoutSeconds;
+        timeoutDisplay.textContent = modalTimeoutValue;
     }
 
     loadSettings();
