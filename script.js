@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { word: 'אֵשׁ', emoji: '🔥' }, { word: ['טִפָּה', 'טיפה'], emoji: '💧' }, { word: 'רוּחַ', emoji: '💨' },
         { word: 'בָּרָק', emoji: '⚡' }, { word: 'סוּפָה', emoji: '🌪️' }, { word: 'גִּיטָרָה', emoji: '🎸' },
         { word: 'פְּסַנְתֵּר', emoji: '🎹' }, { word: 'חֲצוֹצְרָה', emoji: '🎺' }, { word: 'כִּנּוֹר', emoji: '🎻' },
-        { word: ['תֹּף', 'תוף'], emoji: '🥁' }, { word: 'טֶלֶפוֹן', emoji: '📱' }, { word: 'מַחְשֵׁב', emoji: '💻' },
+        { word: ['תֹּף', 'תוף', 'טוב'], emoji: '🥁' }, { word: 'טֶלֶפוֹן', emoji: '📱' }, { word: 'מַחְשֵׁב', emoji: '💻' },
         { word: ['טֶלֶוִיזְיָה', 'טלוויזיה', 'טלויזיה'], emoji: '📺' }, { word: ['נוּרָה', 'נורא'], emoji: '💡' }, { word: 'יַהֲלוֹם', emoji: '💎' },
         { word: 'רוֹבּוֹט', emoji: '🤖' }
     ];
