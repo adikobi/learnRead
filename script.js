@@ -466,15 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveTimeout() {
         recordingTimeoutSeconds = modalTimeoutValue;
         localStorage.setItem('recordingTimeout', recordingTimeoutSeconds);
-
-        // Provide visual feedback without an alert
-        const originalText = saveTimeoutBtn.textContent;
-        saveTimeoutBtn.textContent = 'נשמר!';
-        saveTimeoutBtn.disabled = true;
-        setTimeout(() => {
-            saveTimeoutBtn.textContent = originalText;
-            saveTimeoutBtn.disabled = false;
-        }, 1500);
+        closePasswordModal(); // Close modal immediately after saving
     }
 
     function changeMode() {
